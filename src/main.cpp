@@ -8,6 +8,7 @@
 #include "selectsort.h"
 #include "insertsort.h"
 #include "shellsort.h"
+#include "timsort.h"
 #include "toysort1.h"
 using namespace std;
 
@@ -76,11 +77,11 @@ int main(){
 	vector<Sort*> mediemSorts;
 	mediemSorts.push_back(new ShellSort());
 
-
 	vector<Sort*> quickSorts;
 	quickSorts.push_back(new QuickSort());
 	quickSorts.push_back(new MergeSort());
 	quickSorts.push_back(new HeapSort());
+	quickSorts.push_back(new TimSort());
 	testAll(slowSorts,mediemSorts,quickSorts);
 	return 0;
 }
