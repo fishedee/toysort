@@ -5,6 +5,10 @@
 #include "quicksort.h"
 #include "mergesort.h"
 #include "heapsort.h"
+#include "selectsort.h"
+#include "insertsort.h"
+#include "shellsort.h"
+#include "toysort1.h"
 using namespace std;
 
 struct RunResult{
@@ -43,14 +47,40 @@ void  test(vector<Sort*> sorts,size_t number){
 	} 
 }
 
-int main(){
-	vector<Sort*> sorts;
-	sorts.push_back(new QuickSort());
-	sorts.push_back(new MergeSort());
-	sorts.push_back(new HeapSort());
+void testAll(vector<Sort*> slowSorts,vector<Sort*> mediemSorts,vector<Sort*> quickSorts){
+	vector<Sort*> allSorts;
+	allSorts.insert(allSorts.end(),slowSorts.begin(),slowSorts.end());
+	allSorts.insert(allSorts.end(),mediemSorts.begin(),mediemSorts.end());
+	allSorts.insert(allSorts.end(),quickSorts.begin(),quickSorts.end());
 
-	test(sorts,10000);
-	test(sorts,100000);
-	test(sorts,1000000);
+	vector<Sort*> mediemAllSorts;
+	mediemAllSorts.insert(mediemAllSorts.end(),mediemSorts.begin(),mediemSorts.end());
+	mediemAllSorts.insert(mediemAllSorts.end(),quickSorts.begin(),quickSorts.end());
+
+	test(allSorts,10);
+	test(allSorts,100);
+	test(allSorts,1000);
+	test(allSorts,10000);
+
+	test(mediemAllSorts,100000);
+	test(mediemAllSorts,1000000);
+	test(mediemAllSorts,10000000);
+}
+
+int main(){
+	vector<Sort*> slowSorts;
+	slowSorts.push_back(new SelectSort());
+	slowSorts.push_back(new InsertSort());
+	slowSorts.push_back(new ToySort1());
+
+	vector<Sort*> mediemSorts;
+	mediemSorts.push_back(new ShellSort());
+
+
+	vector<Sort*> quickSorts;
+	quickSorts.push_back(new QuickSort());
+	quickSorts.push_back(new MergeSort());
+	quickSorts.push_back(new HeapSort());
+	testAll(slowSorts,mediemSorts,quickSorts);
 	return 0;
 }
