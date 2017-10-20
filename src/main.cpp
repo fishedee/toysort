@@ -2,12 +2,14 @@
 #include <vector>
 #include <ctime>
 #include "sort.h"
-#include "quicksort.h"
-#include "mergesort.h"
+#include "stdsort.h"
+#include "stdstablesort.h"
 #include "heapsort.h"
 #include "selectsort.h"
 #include "insertsort.h"
 #include "shellsort.h"
+#include "quicksort.h"
+#include "mergesort.h"
 #include "timsort.h"
 #include "toysort1.h"
 using namespace std;
@@ -78,10 +80,12 @@ int main(){
 	mediemSorts.push_back(new ShellSort());
 
 	vector<Sort*> quickSorts;
+	quickSorts.push_back(new StdSort());
+	quickSorts.push_back(new StdStableSort());
 	quickSorts.push_back(new QuickSort());
+	quickSorts.push_back(new TimSort());
 	quickSorts.push_back(new MergeSort());
 	quickSorts.push_back(new HeapSort());
-	quickSorts.push_back(new TimSort());
 	testAll(slowSorts,mediemSorts,quickSorts);
 	return 0;
 }
