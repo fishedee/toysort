@@ -14,6 +14,7 @@
 #include "timsort.h"
 #include "mapsort.h"
 #include "toysort1.h"
+#include "toysort2.h"
 using namespace std;
 
 struct RunResult{
@@ -62,6 +63,7 @@ void testAll(vector<Sort*> slowSorts,vector<Sort*> mediemSorts,vector<Sort*> qui
 	mediemAllSorts.insert(mediemAllSorts.end(),mediemSorts.begin(),mediemSorts.end());
 	mediemAllSorts.insert(mediemAllSorts.end(),quickSorts.begin(),quickSorts.end());
 
+	test(allSorts,5);
 	test(allSorts,100);
 	test(allSorts,1000);
 	test(allSorts,10000);
@@ -72,23 +74,28 @@ void testAll(vector<Sort*> slowSorts,vector<Sort*> mediemSorts,vector<Sort*> qui
 }
 
 int main(){
-	srand(time(0));
-	vector<Sort*> slowSorts;
-	slowSorts.push_back(new SelectSort());
-	slowSorts.push_back(new InsertSort());
-	slowSorts.push_back(new ToySort1());
-	slowSorts.push_back(new MapSort());
+	try{
+		srand(time(0));
+		vector<Sort*> slowSorts;
+		slowSorts.push_back(new SelectSort());
+		slowSorts.push_back(new InsertSort());
+		slowSorts.push_back(new ToySort1());
+		slowSorts.push_back(new MapSort());
 
-	vector<Sort*> mediemSorts;
-	mediemSorts.push_back(new ShellSort());
+		vector<Sort*> mediemSorts;
+		mediemSorts.push_back(new ShellSort());
 
-	vector<Sort*> quickSorts;
-	quickSorts.push_back(new StdSort());
-	quickSorts.push_back(new StdStableSort());
-	quickSorts.push_back(new QuickSort());
-	quickSorts.push_back(new TimSort());
-	quickSorts.push_back(new MergeSort());
-	quickSorts.push_back(new HeapSort());
-	testAll(slowSorts,mediemSorts,quickSorts);
+		vector<Sort*> quickSorts;
+		quickSorts.push_back(new StdSort());
+		quickSorts.push_back(new StdStableSort());
+		quickSorts.push_back(new QuickSort());
+		quickSorts.push_back(new TimSort());
+		quickSorts.push_back(new MergeSort());
+		quickSorts.push_back(new HeapSort());
+		quickSorts.push_back(new ToySort2());
+		testAll(slowSorts,mediemSorts,quickSorts);
+	}catch(string e){
+		cout<<e<<endl;
+	}
 	return 0;
 }
