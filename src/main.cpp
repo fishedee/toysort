@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <cstdlib>
 #include "sort.h"
 #include "stdsort.h"
 #include "stdstablesort.h"
@@ -11,6 +12,7 @@
 #include "quicksort.h"
 #include "mergesort.h"
 #include "timsort.h"
+#include "mapsort.h"
 #include "toysort1.h"
 using namespace std;
 
@@ -60,7 +62,6 @@ void testAll(vector<Sort*> slowSorts,vector<Sort*> mediemSorts,vector<Sort*> qui
 	mediemAllSorts.insert(mediemAllSorts.end(),mediemSorts.begin(),mediemSorts.end());
 	mediemAllSorts.insert(mediemAllSorts.end(),quickSorts.begin(),quickSorts.end());
 
-	test(allSorts,10);
 	test(allSorts,100);
 	test(allSorts,1000);
 	test(allSorts,10000);
@@ -71,10 +72,12 @@ void testAll(vector<Sort*> slowSorts,vector<Sort*> mediemSorts,vector<Sort*> qui
 }
 
 int main(){
+	srand(time(0));
 	vector<Sort*> slowSorts;
 	slowSorts.push_back(new SelectSort());
 	slowSorts.push_back(new InsertSort());
 	slowSorts.push_back(new ToySort1());
+	slowSorts.push_back(new MapSort());
 
 	vector<Sort*> mediemSorts;
 	mediemSorts.push_back(new ShellSort());
