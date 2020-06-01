@@ -37,6 +37,7 @@ RunResult testSingle(Sort * sort,const vector<int>& data){
 			break;
 		}
 	}
+	cout<<"["<<result.size()<<"]"<<endl;
 	return runResult;
 }
 
@@ -65,6 +66,7 @@ void testAll(vector<Sort*> slowSorts,vector<Sort*> mediemSorts,vector<Sort*> qui
 	mediemAllSorts.insert(mediemAllSorts.end(),quickSorts.begin(),quickSorts.end());
 
 	test(allSorts,5);
+	
 	test(allSorts,100);
 	test(allSorts,1000);
 	test(allSorts,10000);

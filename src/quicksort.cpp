@@ -26,6 +26,8 @@ static void quicksort(int* data,int left,int right){
 		}
 		if( i <= j ){
 			swap(data[i],data[j]);
+			i++;
+			j--;
 		}else{
 			break;
 		}
