@@ -10,6 +10,7 @@
 #include "insertsort.h"
 #include "shellsort.h"
 #include "quicksort.h"
+#include "quicksort2.h"
 #include "mergesort.h"
 #include "timsort.h"
 #include "mapsort.h"
@@ -89,6 +90,7 @@ int main(){
 		quickSorts.push_back(new StdSort());
 		quickSorts.push_back(new StdStableSort());
 		quickSorts.push_back(new QuickSort());
+		quickSorts.push_back(new QuickSort2());
 		quickSorts.push_back(new TimSort());
 		quickSorts.push_back(new MergeSort());
 		quickSorts.push_back(new HeapSort());
