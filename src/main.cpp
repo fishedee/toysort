@@ -2,6 +2,7 @@
 #include <vector>
 #include <ctime>
 #include <cstdlib>
+#include <algorithm>
 #include "sort.h"
 #include "stdsort.h"
 #include "stdstablesort.h"

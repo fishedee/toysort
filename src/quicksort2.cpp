@@ -14,21 +14,36 @@ std::string QuickSort2::GetName(){
 	return "QuickSort2";
 }
 
-static void quicksort2(int* data,int left,int right){
-	//总是让第一个小于第二个
-	if( data[left] > data[left+1] ){
-		swap(data[left],data[left+1]);
+static void insertsort(int *data,int left, int right){
+	for( int i = left+1 ;i <= right;i++){
+		int temp = data[i];
+		int j = i - 1;
+		for( ; j >= left ; j-- ){
+			if(data[j] > temp ){
+				data[j+1] = data[j];
+			}else{
+				break;
+			}
+		}
+		data[j+1] = temp;
 	}
-	if( right == left + 1 ){
-		//只有两个元素的时候
+}
+
+
+static void quicksort2(int* data,int left,int right){
+	if( right - left <= 12 ){
+		insertsort(data,left,right);
 		return;
 	}
-
+	//总是让第一个小于第二个
+	if( data[left] > data[right] ){
+		swap(data[left],data[right]);
+	}
 	int first = data[left];
-	int second = data[left+1];
-	int i = left + 2;
-	int j = right;
-	int k = left + 2;
+	int second = data[right];
+	int i = left + 1;
+	int j = right - 1;
+	int k = left + 1;
 	while( true ){
 		while( i <= j && data[i] <= second ){
 			if( data[i] < first ){
@@ -52,30 +67,16 @@ static void quicksort2(int* data,int left,int right){
 			break;
 		}
 	}
-	if( i - k != 0 ){
-		//有中间数据
-		data[left] = data[k-1];
-		data[left+1] = data[k-2];
-		data[k-1] = data[i-1];
-		data[k-2] = first;
-		data[i-1] = second;
-		k = k-2;
-	}else {
-		//没有中间数据
-		data[left] = data[k-1];
-		data[left+1] = data[k-2];
-		data[k-2] = first;
-		data[k-1] = second;
-		k = k - 2;
+	swap(data[k-1],data[left]);
+	swap(data[i],data[right]);
+	if( left < k - 2 ){
+		quicksort2(data,left,k-2);
 	}
-	if( left < k - 1 ){
-		quicksort2(data,left,k-1);
+	if( k < i-1 ){
+		quicksort2(data,k,i-1);
 	}
-	if( k + 1 < i - 2 ){
-		quicksort2(data,k+1,i-2);
-	}
-	if( i < right ){
-		quicksort2(data,i,right);
+	if( i+1 < right ){
+		quicksort2(data,i+1,right);
 	}
 }
 

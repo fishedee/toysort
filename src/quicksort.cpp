@@ -13,7 +13,26 @@ std::string QuickSort::GetName(){
 	return "QuickSort";
 }
 
+static void insertsort(int *data,int left, int right){
+	for( int i = left+1 ;i <= right;i++){
+		int temp = data[i];
+		int j = i - 1;
+		for( ; j >= left ; j-- ){
+			if(data[j] > temp ){
+				data[j+1] = data[j];
+			}else{
+				break;
+			}
+		}
+		data[j+1] = temp;
+	}
+}
+
 static void quicksort(int* data,int left,int right){
+	if( right - left <= 12 ){
+		insertsort(data,left,right);
+		return;
+	}
 	int first = data[left];
 	int i = left + 1;
 	int j = right;
