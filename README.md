@@ -26,7 +26,7 @@ ctest --test-dir /tmp/toysort-release --output-on-failure
 /tmp/toysort-release/toysort
 ```
 
-`toysort` 保留原来的算法对比和输出格式，FastSort 已加入快速算法组。
+`toysort` 保留原来的算法对比和输出格式，FastSort 和 FastSort2 已加入快速算法组。
 也可使用 `sh go.sh` 在仓库内构建并运行原有对比。
 
 独立测试位于 `tests/`，无第三方测试依赖。普通路径和强制堆排序回退路径
@@ -54,7 +54,7 @@ ctest --test-dir /tmp/toysort-sanitize --output-on-failure
 python3 benchmarks/tune.py --build-root /tmp/toysort-tuning
 ```
 
-基准程序依次执行 FastSort、StdSort 和 StdStableSort，**排序和测速均无多线程**。
+基准程序对比 FastSort、FastSort2、StdSort 和 StdStableSort，**排序和测速均无多线程**。
 每组共享相同输入，预热一次、测量五次，轮换执行顺序，用 `steady_clock`
 计时并输出中位数。计时包括各算法 `Run()` 内的输入复制；数据生成、
 预期结果计算和输出校验不计时。结果错误立即失败，性能波动不作为测试失败条件。
@@ -69,7 +69,7 @@ CSV 中 `ratio_to_std` 是该算法耗时除以 StdSort 耗时，小于 1 表示
 构建可用 `-DFASTSORT_INSERTION_THRESHOLD=32 -DFASTSORT_BLOCK_SIZE=32` 覆盖默认值。
 调优中的 `-j 4` 仅用于编译，算法仍为单线程。
 
-## 本机实测
+## FastSort 历史实测
 
 2026-10-04，macOS 26.6.2 / Apple ARM64，Apple Clang 21.0.0，libc++，
 Release 参数 `-O3 -Wall -std=c++14`，未开启 sanitizer。
@@ -98,3 +98,72 @@ Release 参数 `-O3 -Wall -std=c++14`，未开启 sanitizer。
 原始结果：[完整测速](benchmarks/results/apple-arm64-release.csv)、
 [独立种子复核](benchmarks/results/apple-arm64-confirmation.csv)、
 [参数调优](benchmarks/results/apple-arm64-tuning.csv)。
+
+## FastSort2（FAST2）
+
+`FastSort2` 是独立的手写单线程比较排序，保留原来的 FastSort 实现。
+接口仍为 `Run(const std::vector<int>&)`：返回升序副本，不修改输入，不保证稳定性。
+不调用标准库排序，不使用基数、桶、计数排序或多线程。
+
+- 分块比较生成位掩码，按置位位置循环搬移错位元素；短分区使用条件赋值。
+- 三数取中 / 九点采样选择主元，小分区使用插入排序；采样发现重复主元时集中相等元素。
+- 升序、全相等和逆序输入有快捷路径；未发生交换的分区尝试有预算的插入排序。
+- 连续不平衡分区打散采样位置，深度预算耗尽后回退手写堆排序。
+- 最坏时间为 `O(n log n)`，除结果副本外使用固定分区缓冲和 `O(log n)` 栈空间。
+
+FastSort2 复用正确性用例，并增加分区边界、交替极值、周期 127、相邻逆序对和
+旋转升序排列。普通路径和强制堆排序路径各检查 39,967 个用例。
+
+```sh
+cmake -S . -B /tmp/toysort-fast2-release -DCMAKE_BUILD_TYPE=Release
+cmake --build /tmp/toysort-fast2-release -j 4
+ctest --test-dir /tmp/toysort-fast2-release --output-on-failure
+/tmp/toysort-fast2-release/sort_benchmark > /tmp/fast2-release.csv
+/tmp/toysort-fast2-release/sort_benchmark --seed 314159 > /tmp/fast2-confirmation.csv
+
+cmake -S . -B /tmp/toysort-fast2-sanitize -DCMAKE_BUILD_TYPE=Debug -DFASTSORT_SANITIZERS=ON
+cmake --build /tmp/toysort-fast2-sanitize --target fastsort2_test fastsort2_heap_test
+ctest --test-dir /tmp/toysort-fast2-sanitize -R '^fastsort2_' --output-on-failure
+
+python3 benchmarks/tune.py --algorithm FastSort2 --build-root /tmp/toysort-fast2-tuning
+```
+
+调优仅使用种子 `20261004`，比较插入阈值 16/24/32 和分块大小 32/64/128，
+按十万、百万规模随机排列和全范围随机整数四项耗时的几何平均选择参数。
+`--algorithm FastSort` 保留原来的九分布调优口径；两种算法使用独立的 CMake 参数。
+最终验收还覆盖千万规模，并使用独立种子 `314159` 复核，不以综合平均代替随机场景逐项领先。
+
+### FAST2 本机验收结果
+
+2026-10-04，macOS 26.6.2 / Apple ARM64，Apple Clang 21.0.0 / libc++，
+Release `-O3 -Wall -std=c++14`，未开启 sanitizer。默认插入阈值为 **24**，
+分块大小为 **64**；可分别通过 `FASTSORT2_INSERTION_THRESHOLD` 和
+`FASTSORT2_BLOCK_SIZE` 覆盖，后者支持 32、64、128。
+九组参数中 24/64 的四项几何平均耗时为 4.971306 ms，在本轮调优中最低。
+
+以下中位耗时包含输入复制成本；耗时比为 FAST2 / StdSort，小于 1 表示更快：
+
+| 分布 | 元素数 | FAST2 (ms)，种子 20261004 | StdSort (ms)，种子 20261004 | 耗时比 | 独立种子 314159 耗时比 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 随机排列 | 100,000 | 1.546 | 1.582 | 0.977 | 0.943 |
+| 全范围随机整数 | 100,000 | 1.461 | 1.517 | 0.963 | 0.953 |
+| 随机排列 | 1,000,000 | 15.775 | 16.654 | 0.947 | 0.957 |
+| 全范围随机整数 | 1,000,000 | 15.287 | 16.245 | 0.941 | 0.948 |
+| 随机排列 | 10,000,000 | 168.062 | 177.587 | 0.946 | 0.960 |
+| 全范围随机整数 | 10,000,000 | 172.787 | 178.244 | 0.969 | 0.929 |
+
+两个种子的六个重点场景逐项通过，耗时降低约 **2.3%–7.1%**。
+完整 45 场景的等权几何平均耗时比分别为 **0.867** 和 **0.860**。
+这只代表本机测量，不保证所有机器或输入都优于标准库。
+
+存在明确退化：种子 `20261004` 下，一千 / 一万规模的随机排列和随机整数
+耗时比为 1.029–1.346；近乎有序分布五个规模均落后，耗时比为 1.229–4.707，
+其中百万规模为 2.172。部分小规模重复值、周期及山峰形输入也慢于标准库。
+FAST2 的验收目标是大规模随机数据，不是所有场景逐项更快。
+
+验证：Release 的四项 CTest 全部通过；FAST2 普通 / 强制堆排序各 39,967 用例
+均通过 ASan 和 UBSan。原有 `toysort` 完整运行至千万规模，逐项检查 `isCorrect=1`。
+
+原始数据：[完整测速](benchmarks/results/fast2-apple-arm64-release.csv)、
+[独立种子完整复核](benchmarks/results/fast2-apple-arm64-confirmation.csv)、
+[参数调优](benchmarks/results/fast2-apple-arm64-tuning.csv)。

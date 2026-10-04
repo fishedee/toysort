@@ -11,3 +11,6 @@ toysort
 /DartConfiguration.tcl
 /Testing/
 .DS_Store
+/fastsort2_test
+/fastsort2_heap_test
+/libfastsort2_core.a

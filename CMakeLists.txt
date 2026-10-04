@@ -30,12 +30,34 @@ TARGET_COMPILE_DEFINITIONS(toysort PRIVATE
     FASTSORT_INSERTION_THRESHOLD=${FASTSORT_INSERTION_THRESHOLD}
     FASTSORT_BLOCK_SIZE=${FASTSORT_BLOCK_SIZE})
 
+SET(FASTSORT2_INSERTION_THRESHOLD 24 CACHE STRING "FastSort2 insertion-sort threshold")
+SET(FASTSORT2_BLOCK_SIZE 64 CACHE STRING "FastSort2 partition block size")
+ADD_LIBRARY(fastsort2_core STATIC src/fastsort2.cpp)
+TARGET_INCLUDE_DIRECTORIES(fastsort2_core PUBLIC src)
+FOREACH(target fastsort2_core toysort)
+    TARGET_COMPILE_DEFINITIONS(${target} PRIVATE
+        FASTSORT2_INSERTION_THRESHOLD=${FASTSORT2_INSERTION_THRESHOLD}
+        FASTSORT2_BLOCK_SIZE=${FASTSORT2_BLOCK_SIZE})
+ENDFOREACH()
+
 ADD_EXECUTABLE(sort_benchmark benchmarks/sort_benchmark.cpp src/stdsort.cpp src/stdstablesort.cpp)
 TARGET_INCLUDE_DIRECTORIES(sort_benchmark PRIVATE tests)
-TARGET_LINK_LIBRARIES(sort_benchmark fastsort_core)
+TARGET_LINK_LIBRARIES(sort_benchmark fastsort_core fastsort2_core)
 
 INCLUDE(CTest)
 IF(BUILD_TESTING)
+    ADD_EXECUTABLE(fastsort2_test tests/fastsort_test.cpp)
+    TARGET_COMPILE_DEFINITIONS(fastsort2_test PRIVATE TEST_FASTSORT2)
+    TARGET_LINK_LIBRARIES(fastsort2_test fastsort2_core)
+    ADD_TEST(NAME fastsort2_correctness COMMAND fastsort2_test)
+
+    ADD_EXECUTABLE(fastsort2_heap_test tests/fastsort_test.cpp src/fastsort2.cpp)
+    TARGET_INCLUDE_DIRECTORIES(fastsort2_heap_test PRIVATE src)
+    TARGET_COMPILE_DEFINITIONS(fastsort2_heap_test PRIVATE TEST_FASTSORT2 FASTSORT2_FORCE_HEAP
+        FASTSORT2_INSERTION_THRESHOLD=${FASTSORT2_INSERTION_THRESHOLD}
+        FASTSORT2_BLOCK_SIZE=${FASTSORT2_BLOCK_SIZE})
+    ADD_TEST(NAME fastsort2_heap_fallback COMMAND fastsort2_heap_test)
+
     ADD_EXECUTABLE(fastsort_test tests/fastsort_test.cpp)
     TARGET_LINK_LIBRARIES(fastsort_test fastsort_core)
     ADD_TEST(NAME fastsort_correctness COMMAND fastsort_test)
@@ -52,7 +74,7 @@ IF(FASTSORT_SANITIZERS)
     IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
         MESSAGE(FATAL_ERROR "FASTSORT_SANITIZERS requires Clang or GCC")
     ENDIF()
-    FOREACH(target fastsort_core sort_benchmark fastsort_test fastsort_heap_test)
+    FOREACH(target fastsort_core fastsort2_core sort_benchmark fastsort_test fastsort_heap_test fastsort2_test fastsort2_heap_test)
         IF(TARGET ${target})
             TARGET_COMPILE_OPTIONS(${target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
             SET_PROPERTY(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " -fsanitize=address,undefined")

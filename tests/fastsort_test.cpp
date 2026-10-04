@@ -1,4 +1,10 @@
+#ifdef TEST_FASTSORT2
+#include "fastsort2.h"
+using TestedSort = FastSort2;
+#else
 #include "fastsort.h"
+using TestedSort = FastSort;
+#endif
 #include "sort_data.h"
 #include <iostream>
 #include <stdexcept>
@@ -10,7 +16,7 @@ void check(const std::vector<int>& input, const std::string& label){
 	std::vector<int> original = input;
 	std::vector<int> expected = input;
 	std::sort(expected.begin(), expected.end());
-	FastSort sorter;
+	TestedSort sorter;
 	std::vector<int> actual = sorter.Run(input);
 	if(actual != expected || input != original){
 		throw std::runtime_error(label + ": incorrect output or changed input, size=" + std::to_string(input.size()));
@@ -64,6 +70,24 @@ int main(){
 			for(int i = 0; i < 20; ++i) input[random() % input.size()] = i % 2 ? INT_MIN : INT_MAX;
 			check(input, "sparse outliers");
 		}
+#ifdef TEST_FASTSORT2
+		// Exercise sampling/block edges and skewed partitions independently of seeds.
+		for(std::size_t size : {30u, 32u, 34u, 62u, 64u, 66u, 126u, 128u, 130u,
+			254u, 256u, 258u, 1023u, 1025u, 100000u}){
+			std::vector<int> input(size);
+			for(std::size_t i = 0; i < size; ++i)
+				input[i] = i % 2 ? INT_MAX - static_cast<int>(i) : INT_MIN + static_cast<int>(i);
+			check(input, "alternating extremes");
+			for(std::size_t i = 0; i < size; ++i) input[i] = static_cast<int>(i % 127);
+			check(input, "sawtooth 127");
+			std::iota(input.begin(), input.end(), 0);
+			for(std::size_t i = 0; i + 1 < size; i += 2) std::swap(input[i], input[i + 1]);
+			check(input, "adjacent inversions");
+			std::iota(input.begin(), input.end(), 0);
+			std::rotate(input.begin(), input.begin() + size / 3, input.end());
+			check(input, "rotated ascending");
+		}
+#endif
 		std::cout << "PASS: " << cases << " cases (output, size, and input preservation)\n";
 		return 0;
 	}catch(const std::exception& error){

@@ -1,4 +1,5 @@
 #include "fastsort.h"
+#include "fastsort2.h"
 #include "stdsort.h"
 #include "stdstablesort.h"
 #include "sort_data.h"
@@ -33,9 +34,13 @@ int main(int argc, char** argv){
 			}
 		}
 		FastSort fast;
+		FastSort2 fast2;
 		StdSort standard;
 		StdStableSort stable;
-		Sort* algorithms[] = {&fast, &standard, &stable};
+		Sort* algorithms[] = {&fast, &fast2, &standard, &stable};
+		const std::size_t algorithmCount = sizeof(algorithms) / sizeof(algorithms[0]);
+		std::size_t standardIndex = 0;
+		while(algorithms[standardIndex] != &standard) ++standardIndex;
 		std::cout << "# seed=" << seed << ", warmups=1, repetitions=5, clock=steady_clock, includes Run copy\n";
 		std::cout << "distribution,size,algorithm,median_ms,ratio_to_std\n";
 		std::size_t group = 0;
@@ -45,10 +50,10 @@ int main(int argc, char** argv){
 				std::vector<int> input = sortData::make(size, distribution, seed);
 				std::vector<int> expected = input;
 				std::sort(expected.begin(), expected.end());
-				std::vector<double> samples[3];
+				std::vector<double> samples[algorithmCount];
 				for(int round = 0; round < 6; ++round){
-					for(int slot = 0; slot < 3; ++slot){
-						std::size_t index = (group + round + slot) % 3;
+					for(std::size_t slot = 0; slot < algorithmCount; ++slot){
+						std::size_t index = (group + round + slot) % algorithmCount;
 						auto begin = std::chrono::steady_clock::now();
 						std::vector<int> result = algorithms[index]->Run(input);
 						auto end = std::chrono::steady_clock::now();
@@ -56,14 +61,14 @@ int main(int argc, char** argv){
 						if(round != 0) samples[index].push_back(std::chrono::duration<double, std::milli>(end - begin).count());
 					}
 				}
-				double medians[3];
-				for(int i = 0; i < 3; ++i){
+				double medians[algorithmCount];
+				for(std::size_t i = 0; i < algorithmCount; ++i){
 					std::sort(samples[i].begin(), samples[i].end());
 					medians[i] = samples[i][2];
 				}
-				for(int i = 0; i < 3; ++i){
+				for(std::size_t i = 0; i < algorithmCount; ++i){
 					std::cout << distribution << ',' << size << ',' << algorithms[i]->GetName() << ','
-						<< std::fixed << std::setprecision(6) << medians[i] << ',' << medians[i] / medians[1] << '\n';
+						<< std::fixed << std::setprecision(6) << medians[i] << ',' << medians[i] / medians[standardIndex] << '\n';
 				}
 				std::cout.flush();
 				++group;
