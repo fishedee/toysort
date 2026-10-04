@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sequential Release builds and reproducible FastSort/FastSort2 parameter sweeps."""
+"""Sequential Release builds and reproducible FastSort/FastSort2/FastSort3 parameter sweeps."""
 import argparse
 import csv
 import math
@@ -12,7 +12,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build-root", type=Path,
                         default=Path(tempfile.gettempdir()) / "toysort-tuning")
-    parser.add_argument("--algorithm", choices=("FastSort", "FastSort2"), default="FastSort")
+    parser.add_argument("--algorithm", choices=("FastSort", "FastSort2", "FastSort3"), default="FastSort")
     parser.add_argument("--seed", type=int, default=20261004)
     args = parser.parse_args()
     if not 0 <= args.seed <= 2**32 - 1:
@@ -20,8 +20,8 @@ def main():
     source = Path(__file__).resolve().parents[1]
     args.build_root.mkdir(parents=True, exist_ok=True)
     scores = []
-    prefix = "FASTSORT2" if args.algorithm == "FastSort2" else "FASTSORT"
-    test = "fastsort2" if args.algorithm == "FastSort2" else "fastsort"
+    prefix = args.algorithm.upper()
+    test = args.algorithm.lower()
     for insertion in (16, 24, 32):
         for block in (32, 64, 128):
             name = f"insertion-{insertion}-block-{block}"
@@ -47,8 +47,8 @@ def main():
             with output.open() as data:
                 rows = csv.DictReader(line for line in data if not line.startswith("#"))
                 times = [float(row["median_ms"]) for row in rows if row["algorithm"] == args.algorithm
-                         and (args.algorithm != "FastSort2" or row["distribution"] in ("permutation", "random"))]
-            expected = 4 if args.algorithm == "FastSort2" else 18
+                         and (args.algorithm == "FastSort" or row["distribution"] in ("permutation", "random"))]
+            expected = 4 if args.algorithm != "FastSort" else 18
             if len(times) != expected or any(time <= 0 for time in times):
                 raise RuntimeError(f"incomplete or invalid measurements in {output}")
             score = math.exp(sum(math.log(time) for time in times) / len(times))

@@ -40,12 +40,47 @@ FOREACH(target fastsort2_core toysort)
         FASTSORT2_BLOCK_SIZE=${FASTSORT2_BLOCK_SIZE})
 ENDFOREACH()
 
+SET(FASTSORT3_INSERTION_THRESHOLD 24 CACHE STRING "FastSort3 insertion-sort threshold")
+SET(FASTSORT3_BLOCK_SIZE 64 CACHE STRING "FastSort3 partition block size")
+OPTION(FASTSORT3_ENABLE_SIMD "Enable FastSort3 NEON / runtime-dispatched AVX2" ON)
+ADD_LIBRARY(fastsort3_core STATIC src/fastsort3.cpp)
+TARGET_INCLUDE_DIRECTORIES(fastsort3_core PUBLIC src)
+FOREACH(target fastsort3_core toysort)
+    TARGET_COMPILE_DEFINITIONS(${target} PRIVATE
+        FASTSORT3_INSERTION_THRESHOLD=${FASTSORT3_INSERTION_THRESHOLD}
+        FASTSORT3_BLOCK_SIZE=${FASTSORT3_BLOCK_SIZE}
+        FASTSORT3_ENABLE_SIMD=$<BOOL:${FASTSORT3_ENABLE_SIMD}>)
+ENDFOREACH()
+
 ADD_EXECUTABLE(sort_benchmark benchmarks/sort_benchmark.cpp src/stdsort.cpp src/stdstablesort.cpp)
 TARGET_INCLUDE_DIRECTORIES(sort_benchmark PRIVATE tests)
-TARGET_LINK_LIBRARIES(sort_benchmark fastsort_core fastsort2_core)
+TARGET_LINK_LIBRARIES(sort_benchmark fastsort_core fastsort2_core fastsort3_core)
 
 INCLUDE(CTest)
 IF(BUILD_TESTING)
+    ADD_EXECUTABLE(fastsort3_test tests/fastsort_test.cpp)
+    TARGET_COMPILE_DEFINITIONS(fastsort3_test PRIVATE TEST_FASTSORT3)
+    TARGET_LINK_LIBRARIES(fastsort3_test fastsort3_core)
+    ADD_TEST(NAME fastsort3_correctness COMMAND fastsort3_test)
+
+    FOREACH(variant scalar heap)
+        ADD_EXECUTABLE(fastsort3_${variant}_test tests/fastsort_test.cpp src/fastsort3.cpp)
+        TARGET_INCLUDE_DIRECTORIES(fastsort3_${variant}_test PRIVATE src)
+        TARGET_COMPILE_DEFINITIONS(fastsort3_${variant}_test PRIVATE TEST_FASTSORT3
+            FASTSORT3_INSERTION_THRESHOLD=${FASTSORT3_INSERTION_THRESHOLD}
+            FASTSORT3_BLOCK_SIZE=${FASTSORT3_BLOCK_SIZE})
+        ADD_TEST(NAME fastsort3_${variant}_fallback COMMAND fastsort3_${variant}_test)
+    ENDFOREACH()
+    TARGET_COMPILE_DEFINITIONS(fastsort3_scalar_test PRIVATE FASTSORT3_ENABLE_SIMD=0)
+    TARGET_COMPILE_DEFINITIONS(fastsort3_heap_test PRIVATE FASTSORT3_FORCE_HEAP
+        FASTSORT3_ENABLE_SIMD=$<BOOL:${FASTSORT3_ENABLE_SIMD}>)
+
+    ADD_EXECUTABLE(fastsort3_masks_test tests/fastsort3_masks_test.cpp)
+    TARGET_INCLUDE_DIRECTORIES(fastsort3_masks_test PRIVATE src)
+    TARGET_COMPILE_DEFINITIONS(fastsort3_masks_test PRIVATE
+        FASTSORT3_ENABLE_SIMD=$<BOOL:${FASTSORT3_ENABLE_SIMD}>)
+    ADD_TEST(NAME fastsort3_masks COMMAND fastsort3_masks_test)
+
     ADD_EXECUTABLE(fastsort2_test tests/fastsort_test.cpp)
     TARGET_COMPILE_DEFINITIONS(fastsort2_test PRIVATE TEST_FASTSORT2)
     TARGET_LINK_LIBRARIES(fastsort2_test fastsort2_core)
@@ -74,7 +109,7 @@ IF(FASTSORT_SANITIZERS)
     IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
         MESSAGE(FATAL_ERROR "FASTSORT_SANITIZERS requires Clang or GCC")
     ENDIF()
-    FOREACH(target fastsort_core fastsort2_core sort_benchmark fastsort_test fastsort_heap_test fastsort2_test fastsort2_heap_test)
+    FOREACH(target fastsort3_core fastsort3_test fastsort3_scalar_test fastsort3_heap_test fastsort3_masks_test fastsort_core fastsort2_core sort_benchmark fastsort_test fastsort_heap_test fastsort2_test fastsort2_heap_test)
         IF(TARGET ${target})
             TARGET_COMPILE_OPTIONS(${target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
             SET_PROPERTY(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " -fsanitize=address,undefined")

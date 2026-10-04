@@ -14,3 +14,9 @@ toysort
 /fastsort2_test
 /fastsort2_heap_test
 /libfastsort2_core.a
+
+/fastsort3_test
+/fastsort3_scalar_test
+/fastsort3_heap_test
+/fastsort3_masks_test
+/libfastsort3_core.a

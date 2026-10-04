@@ -1,4 +1,7 @@
-#ifdef TEST_FASTSORT2
+#if defined(TEST_FASTSORT3)
+#include "fastsort3.h"
+using TestedSort = FastSort3;
+#elif defined(TEST_FASTSORT2)
 #include "fastsort2.h"
 using TestedSort = FastSort2;
 #else
@@ -70,7 +73,7 @@ int main(){
 			for(int i = 0; i < 20; ++i) input[random() % input.size()] = i % 2 ? INT_MIN : INT_MAX;
 			check(input, "sparse outliers");
 		}
-#ifdef TEST_FASTSORT2
+#if defined(TEST_FASTSORT2) || defined(TEST_FASTSORT3)
 		// Exercise sampling/block edges and skewed partitions independently of seeds.
 		for(std::size_t size : {30u, 32u, 34u, 62u, 64u, 66u, 126u, 128u, 130u,
 			254u, 256u, 258u, 1023u, 1025u, 100000u}){
@@ -86,6 +89,17 @@ int main(){
 			std::iota(input.begin(), input.end(), 0);
 			std::rotate(input.begin(), input.begin() + size / 3, input.end());
 			check(input, "rotated ascending");
+		}
+#endif
+#ifdef TEST_FASTSORT3
+		// Every tail length and lane alignment around all supported block sizes.
+		for(std::size_t size = 2; size <= 530; ++size){
+			std::vector<int> input(size);
+			for(int& item : input) item = value(random);
+			check(input, "SIMD boundaries random");
+			for(std::size_t i = 0; i < size; ++i)
+				input[i] = i % 3 == 0 ? INT_MIN : (i % 3 == 1 ? 0 : INT_MAX);
+			check(input, "SIMD boundaries duplicates/extremes");
 		}
 #endif
 		std::cout << "PASS: " << cases << " cases (output, size, and input preservation)\n";

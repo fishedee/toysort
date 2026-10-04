@@ -26,7 +26,7 @@ ctest --test-dir /tmp/toysort-release --output-on-failure
 /tmp/toysort-release/toysort
 ```
 
-`toysort` 保留原来的算法对比和输出格式，FastSort 和 FastSort2 已加入快速算法组。
+`toysort` 保留原来的算法对比和输出格式，FastSort、FastSort2 和 FastSort3 已加入快速算法组。
 也可使用 `sh go.sh` 在仓库内构建并运行原有对比。
 
 独立测试位于 `tests/`，无第三方测试依赖。普通路径和强制堆排序回退路径
@@ -54,7 +54,7 @@ ctest --test-dir /tmp/toysort-sanitize --output-on-failure
 python3 benchmarks/tune.py --build-root /tmp/toysort-tuning
 ```
 
-基准程序对比 FastSort、FastSort2、StdSort 和 StdStableSort，**排序和测速均无多线程**。
+基准程序对比 FastSort、FastSort2、FastSort3、StdSort 和 StdStableSort，**排序和测速均无多线程**。
 每组共享相同输入，预热一次、测量五次，轮换执行顺序，用 `steady_clock`
 计时并输出中位数。计时包括各算法 `Run()` 内的输入复制；数据生成、
 预期结果计算和输出校验不计时。结果错误立即失败，性能波动不作为测试失败条件。
@@ -167,3 +167,78 @@ FAST2 的验收目标是大规模随机数据，不是所有场景逐项更快�
 原始数据：[完整测速](benchmarks/results/fast2-apple-arm64-release.csv)、
 [独立种子完整复核](benchmarks/results/fast2-apple-arm64-confirmation.csv)、
 [参数调优](benchmarks/results/fast2-apple-arm64-tuning.csv)。
+
+## FastSort3：SIMD 分区
+
+`FastSort3` 在 FastSort2 的基础上，使用 SIMD 批量比较整数并生成分区位掩码；
+保留 FastSort2 作为独立对照。接口仍是 `Run(const std::vector<int>&)`，返回升序副本，
+不修改输入，不保证稳定性，保持单线程比较排序及最坏 `O(n log n)` 时间复杂度。
+主元采样、重复值处理、小区间插入排序、已有序快捷路径和堆排序保护沿用 FastSort2。
+
+- ARM64 NEON：每次向量比较 4 个有符号整数，合并 16 个比较结果后压缩为位掩码。
+- x86 GCC/Clang：用独立 `target("avx2")` 函数每次比较 8 个整数，并在排序入口检测
+  CPU 支持情况；无 AVX2 时自动使用标量路径。不需要全局开启 `-mavx2` 或 `-march=native`。
+- 其他架构/编译器使用标量路径。可通过 `-DFASTSORT3_ENABLE_SIMD=OFF` 强制禁用显式 SIMD 后端。
+- 只读取完整有效向量，短分区保持标量处理；左右掩码保留原来的比较语义和反向位序。
+  `FastSort3::GetBackendName()` 返回 `NEON`、`AVX2` 或 `scalar`，基准 CSV 注释也记录后端。
+
+```sh
+cmake -S . -B /tmp/toysort-fast3-release -DCMAKE_BUILD_TYPE=Release
+cmake --build /tmp/toysort-fast3-release -j 4
+ctest --test-dir /tmp/toysort-fast3-release --output-on-failure
+/tmp/toysort-fast3-release/sort_benchmark > /tmp/fast3-release.csv
+/tmp/toysort-fast3-release/sort_benchmark --seed 314159 > /tmp/fast3-confirmation.csv
+
+cmake -S . -B /tmp/toysort-fast3-sanitize -DCMAKE_BUILD_TYPE=Debug -DFASTSORT_SANITIZERS=ON
+cmake --build /tmp/toysort-fast3-sanitize --target fastsort3_test fastsort3_scalar_test fastsort3_heap_test fastsort3_masks_test -j 4
+ctest --test-dir /tmp/toysort-fast3-sanitize -R '^fastsort3_' --output-on-failure
+
+python3 benchmarks/tune.py --algorithm FastSort3 --build-root /tmp/toysort-fast3-tuning
+```
+
+FastSort3 的普通、强制标量和强制堆排序测试各检查 41,025 个输入，包括 SIMD lane、
+分区块及尾部边界。独立掩码测试检查 326,432 个场景，覆盖所有 16 位模式、
+单个置位/清零、全空/全满、有符号极值、反向位序和不同地址对齐。
+
+调优使用独立的 `FASTSORT3_INSERTION_THRESHOLD`、`FASTSORT3_BLOCK_SIZE` 参数，
+候选分别为 16/24/32 和 32/64/128，按十万/百万随机排列、全范围随机整数四项
+耗时的等权几何平均选择参数；最终另外验收千万规模和独立种子。
+
+### FAST3 本机验收结果
+
+2026-10-04，Apple ARM64 / Apple Clang 21.0.0 / libc++，Release `-O3 -Wall -std=c++14`，
+NEON 后端，未开启 sanitizer。九组参数中 **插入阈值 24、分块大小 64** 的四项
+几何平均耗时最低，为 **4.549758 ms**，因此采用此默认值。
+
+两个种子各运行两轮完整基准，每轮每场景预热一次、测量五次、报告中位数；
+每轮均轮换算法顺序，计时包含输入复制。以下为 FastSort3 / FastSort2 的耗时比，
+小于 1 表示 FastSort3 更快：
+
+| 分布 | 元素数 | 种子 20261004 | 同种子复测 | 种子 314159 | 同种子复测 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 随机排列 | 100,000 | 0.958 | 0.944 | 0.977 | 0.920 |
+| 全范围随机整数 | 100,000 | 0.940 | 0.916 | 0.940 | 0.959 |
+| 随机排列 | 1,000,000 | 0.933 | 0.932 | 0.935 | 0.945 |
+| 全范围随机整数 | 1,000,000 | 0.922 | 0.932 | 0.932 | 0.931 |
+| 随机排列 | 10,000,000 | 0.949 | 0.930 | 0.931 | 0.933 |
+| 全范围随机整数 | 10,000,000 | 0.923 | 0.929 | 0.929 | 0.938 |
+
+12 个重点场景在两轮测量中均优于 FastSort2，耗时降低 **2.3%–8.4%**。
+四轮完整 45 场景的等权几何平均耗时比分别为 0.958、0.955、0.952、0.947（首次两个种子、复测两个种子）。
+这些结果仅代表本机，不能推断其他 CPU 上的收益，也不表示每种输入都更快。
+例如首次测量中，一千元素升序输入耗时比为 1.059；短耗时场景受计时与执行顺序影响，
+请结合原始 CSV 比较，而不要将小差异视为稳定提升。
+
+验证结果：Release 全部 8 项 CTest 通过；FastSort3 普通、强制标量、强制堆排序及掩码测试
+通过 ASan/UBSan；九组调优配置均先通过正确性测试；原有 `toysort` 跑至千万规模，
+93 条 `isCorrect` 结果全部为 1。
+
+x86_64 版本已通过 Apple Clang 交叉编译，并在本机 x86 转译环境通过普通、强制标量及
+掩码测试。该环境报告不支持 AVX2，因此实际运行并验证了自动标量回退；
+**AVX2 指令路径尚未在支持 AVX2 的 x86 实机上运行验证，暂无其性能结论**。
+
+原始数据：[首次完整测速](benchmarks/results/fast3-apple-arm64-release.csv)、
+[独立种子完整测速](benchmarks/results/fast3-apple-arm64-confirmation.csv)、
+[默认种子复测](benchmarks/results/fast3-apple-arm64-repeat.csv)、
+[独立种子复测](benchmarks/results/fast3-apple-arm64-confirmation-repeat.csv)、
+[参数调优](benchmarks/results/fast3-apple-arm64-tuning.csv)。

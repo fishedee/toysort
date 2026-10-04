@@ -6,6 +6,7 @@
 #include "sort.h"
 #include "fastsort.h"
 #include "fastsort2.h"
+#include "fastsort3.h"
 #include "stdsort.h"
 #include "stdstablesort.h"
 #include "heapsort.h"
@@ -94,6 +95,7 @@ int main(){
 		vector<Sort*> quickSorts;
 		quickSorts.push_back(new FastSort());
 		quickSorts.push_back(new FastSort2());
+		quickSorts.push_back(new FastSort3());
 		quickSorts.push_back(new StdSort());
 		quickSorts.push_back(new StdStableSort());
 		quickSorts.push_back(new QuickSort());

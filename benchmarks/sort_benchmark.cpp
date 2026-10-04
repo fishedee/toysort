@@ -1,5 +1,6 @@
 #include "fastsort.h"
 #include "fastsort2.h"
+#include "fastsort3.h"
 #include "stdsort.h"
 #include "stdstablesort.h"
 #include "sort_data.h"
@@ -35,13 +36,15 @@ int main(int argc, char** argv){
 		}
 		FastSort fast;
 		FastSort2 fast2;
+		FastSort3 fast3;
 		StdSort standard;
 		StdStableSort stable;
-		Sort* algorithms[] = {&fast, &fast2, &standard, &stable};
+		Sort* algorithms[] = {&fast, &fast2, &fast3, &standard, &stable};
 		const std::size_t algorithmCount = sizeof(algorithms) / sizeof(algorithms[0]);
 		std::size_t standardIndex = 0;
 		while(algorithms[standardIndex] != &standard) ++standardIndex;
 		std::cout << "# seed=" << seed << ", warmups=1, repetitions=5, clock=steady_clock, includes Run copy\n";
+		std::cout << "# FastSort3 backend=" << FastSort3::GetBackendName() << '\n';
 		std::cout << "distribution,size,algorithm,median_ms,ratio_to_std\n";
 		std::size_t group = 0;
 		for(std::size_t size : {1000u, 10000u, 100000u, 1000000u, 10000000u}){
