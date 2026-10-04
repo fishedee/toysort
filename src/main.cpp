@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include "sort.h"
+#include "fastsort.h"
 #include "stdsort.h"
 #include "stdstablesort.h"
 #include "heapsort.h"
@@ -90,6 +91,7 @@ int main(){
 		mediemSorts.push_back(new ShellSort());
 
 		vector<Sort*> quickSorts;
+		quickSorts.push_back(new FastSort());
 		quickSorts.push_back(new StdSort());
 		quickSorts.push_back(new StdStableSort());
 		quickSorts.push_back(new QuickSort());
@@ -97,7 +99,7 @@ int main(){
 		quickSorts.push_back(new TimSort());
 		quickSorts.push_back(new MergeSort());
 		quickSorts.push_back(new HeapSort());
-		quickSorts.push_back(new ToySort2());
+		//quickSorts.push_back(new ToySort2());
 		testAll(slowSorts,mediemSorts,quickSorts);
 	}catch(string e){
 		cout<<e<<endl;

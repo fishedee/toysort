@@ -3,4 +3,11 @@ CMakeFiles
 cmake_install.cmake
 Makefile
 toysort
+/fastsort_test
+/fastsort_heap_test
+/sort_benchmark
+/libfastsort_core.a
+/CTestTestfile.cmake
+/DartConfiguration.tcl
+/Testing/
 .DS_Store
