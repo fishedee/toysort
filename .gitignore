@@ -20,3 +20,8 @@ toysort
 /fastsort3_heap_test
 /fastsort3_masks_test
 /libfastsort3_core.a
+
+/fastsort4_test
+/fastsort4_gpu_test
+/fastsort4_failure_test
+/libfastsort4_core.a

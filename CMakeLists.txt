@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 PROJECT (HELLO)
 
 SET(CMAKE_CXX_STANDARD 14)
@@ -10,6 +10,7 @@ SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb ")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall")
 
 AUX_SOURCE_DIRECTORY(src SRC_LIST)
+LIST(REMOVE_ITEM SRC_LIST src/fastsort3.cpp src/fastsort4.cpp)
 
 MESSAGE(STATUS "This is BINARY dir " ${HELLO_BINARY_DIR})
 
@@ -52,12 +53,49 @@ FOREACH(target fastsort3_core toysort)
         FASTSORT3_ENABLE_SIMD=$<BOOL:${FASTSORT3_ENABLE_SIMD}>)
 ENDFOREACH()
 
+OPTION(FASTSORT4_ENABLE_METAL "Enable FastSort4 Metal GPU backend on macOS" ${APPLE})
+SET(FASTSORT4_GPU_THRESHOLD 100000 CACHE STRING "FastSort4 minimum GPU input size")
+SET(FASTSORT4_BLOCK_SIZE 128 CACHE STRING "FastSort4 Metal block size: 128/256/512")
+SET(FASTSORT4_MERGE_ITEMS 8 CACHE STRING "FastSort4 outputs per merge thread: 4/8/16")
+ADD_LIBRARY(fastsort4_core STATIC src/fastsort4.cpp)
+TARGET_INCLUDE_DIRECTORIES(fastsort4_core PUBLIC src)
+TARGET_LINK_LIBRARIES(fastsort4_core PUBLIC fastsort3_core)
+TARGET_COMPILE_DEFINITIONS(fastsort4_core PRIVATE
+    FASTSORT4_GPU_THRESHOLD=${FASTSORT4_GPU_THRESHOLD}
+    FASTSORT4_BLOCK_SIZE=${FASTSORT4_BLOCK_SIZE}
+    FASTSORT4_MERGE_ITEMS=${FASTSORT4_MERGE_ITEMS})
+IF(APPLE AND FASTSORT4_ENABLE_METAL)
+    ENABLE_LANGUAGE(OBJCXX)
+    SET(CMAKE_OBJCXX_STANDARD 14)
+    SET(CMAKE_OBJCXX_STANDARD_REQUIRED ON)
+    TARGET_SOURCES(fastsort4_core PRIVATE src/metal/fastsort4_backend.mm)
+    SET_SOURCE_FILES_PROPERTIES(src/metal/fastsort4_backend.mm PROPERTIES COMPILE_FLAGS "-fobjc-arc")
+    TARGET_COMPILE_DEFINITIONS(fastsort4_core PRIVATE FASTSORT4_HAS_METAL)
+    TARGET_LINK_LIBRARIES(fastsort4_core PUBLIC "-framework Foundation" "-framework Metal")
+ENDIF()
+TARGET_LINK_LIBRARIES(toysort fastsort4_core)
+
 ADD_EXECUTABLE(sort_benchmark benchmarks/sort_benchmark.cpp src/stdsort.cpp src/stdstablesort.cpp)
 TARGET_INCLUDE_DIRECTORIES(sort_benchmark PRIVATE tests)
-TARGET_LINK_LIBRARIES(sort_benchmark fastsort_core fastsort2_core fastsort3_core)
+TARGET_LINK_LIBRARIES(sort_benchmark fastsort_core fastsort2_core fastsort4_core)
 
 INCLUDE(CTest)
 IF(BUILD_TESTING)
+    ADD_EXECUTABLE(fastsort4_test tests/fastsort_test.cpp)
+    TARGET_COMPILE_DEFINITIONS(fastsort4_test PRIVATE TEST_FASTSORT4)
+    TARGET_LINK_LIBRARIES(fastsort4_test fastsort4_core)
+    ADD_TEST(NAME fastsort4_correctness COMMAND fastsort4_test)
+
+    ADD_EXECUTABLE(fastsort4_gpu_test tests/fastsort4_gpu_test.cpp)
+    TARGET_LINK_LIBRARIES(fastsort4_gpu_test fastsort4_core)
+    ADD_TEST(NAME fastsort4_gpu COMMAND fastsort4_gpu_test)
+    SET_TESTS_PROPERTIES(fastsort4_gpu PROPERTIES SKIP_RETURN_CODE 77)
+
+    ADD_EXECUTABLE(fastsort4_failure_test tests/fastsort4_failure_test.cpp src/fastsort4.cpp)
+    TARGET_COMPILE_DEFINITIONS(fastsort4_failure_test PRIVATE FASTSORT4_HAS_METAL FASTSORT4_GPU_THRESHOLD=2)
+    TARGET_LINK_LIBRARIES(fastsort4_failure_test fastsort3_core)
+    ADD_TEST(NAME fastsort4_failure COMMAND fastsort4_failure_test)
+
     ADD_EXECUTABLE(fastsort3_test tests/fastsort_test.cpp)
     TARGET_COMPILE_DEFINITIONS(fastsort3_test PRIVATE TEST_FASTSORT3)
     TARGET_LINK_LIBRARIES(fastsort3_test fastsort3_core)
@@ -109,7 +147,9 @@ IF(FASTSORT_SANITIZERS)
     IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
         MESSAGE(FATAL_ERROR "FASTSORT_SANITIZERS requires Clang or GCC")
     ENDIF()
-    FOREACH(target fastsort3_core fastsort3_test fastsort3_scalar_test fastsort3_heap_test fastsort3_masks_test fastsort_core fastsort2_core sort_benchmark fastsort_test fastsort_heap_test fastsort2_test fastsort2_heap_test)
+    # toysort links instrumented FastSort3/4 libraries; leave legacy sources uninstrumented.
+    SET_PROPERTY(TARGET toysort APPEND_STRING PROPERTY LINK_FLAGS " -fsanitize=address,undefined")
+    FOREACH(target fastsort4_core fastsort4_test fastsort4_gpu_test fastsort4_failure_test fastsort3_core fastsort3_test fastsort3_scalar_test fastsort3_heap_test fastsort3_masks_test fastsort_core fastsort2_core sort_benchmark fastsort_test fastsort_heap_test fastsort2_test fastsort2_heap_test)
         IF(TARGET ${target})
             TARGET_COMPILE_OPTIONS(${target} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
             SET_PROPERTY(TARGET ${target} APPEND_STRING PROPERTY LINK_FLAGS " -fsanitize=address,undefined")

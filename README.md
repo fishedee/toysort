@@ -26,7 +26,7 @@ ctest --test-dir /tmp/toysort-release --output-on-failure
 /tmp/toysort-release/toysort
 ```
 
-`toysort` 保留原来的算法对比和输出格式，FastSort、FastSort2 和 FastSort3 已加入快速算法组。
+`toysort` 保留原来的算法对比和输出格式，FastSort、FastSort2、FastSort3 和 FastSort4 已加入快速算法组。
 也可使用 `sh go.sh` 在仓库内构建并运行原有对比。
 
 独立测试位于 `tests/`，无第三方测试依赖。普通路径和强制堆排序回退路径
@@ -54,7 +54,8 @@ ctest --test-dir /tmp/toysort-sanitize --output-on-failure
 python3 benchmarks/tune.py --build-root /tmp/toysort-tuning
 ```
 
-基准程序对比 FastSort、FastSort2、FastSort3、StdSort 和 StdStableSort，**排序和测速均无多线程**。
+基准程序对比 FastSort、FastSort2、FastSort3、FastSort4、StdSort 和 StdStableSort。
+CPU 排序保持单线程，FastSort4 可使用 GPU 并行排序；各算法依次测速。
 每组共享相同输入，预热一次、测量五次，轮换执行顺序，用 `steady_clock`
 计时并输出中位数。计时包括各算法 `Run()` 内的输入复制；数据生成、
 预期结果计算和输出校验不计时。结果错误立即失败，性能波动不作为测试失败条件。
@@ -242,3 +243,156 @@ x86_64 版本已通过 Apple Clang 交叉编译，并在本机 x86 转译环境�
 [默认种子复测](benchmarks/results/fast3-apple-arm64-repeat.csv)、
 [独立种子复测](benchmarks/results/fast3-apple-arm64-confirmation-repeat.csv)、
 [参数调优](benchmarks/results/fast3-apple-arm64-tuning.csv)。
+
+## FastSort4：Metal GPU 比较排序
+
+`FastSort4` 复用 FastSort3 的 CPU 实现，大数组在 macOS 上使用手写 Metal 比较排序。
+接口保持 `Run(const std::vector<int>&)`：返回升序副本、不修改输入、不保证稳定性。
+不使用标准库排序、基数排序、桶排序或计数排序；`std::sort` 仅用于测试和基准校验。
+本版未实现 NPU 或 CUDA 后端；其他平台以及禁用 Metal 的构建自动使用 FastSort3。
+
+- GPU 先在 threadgroup 内执行固定大小 bitonic 排序，再逐轮执行 Merge Path 并行归并。
+  每个线程通过对角线二分确定不重叠的输出片段；归并相等元素时左侧优先。
+  尾块填充 `INT_MAX` 并只写回有效长度，完整支持负数、整数极值及任意长度。
+- 小于启用阈值的数组直接进入 FastSort3。大数组的升序、全相等和逆序输入在 CPU
+  上直接复制或反转；其他输入进入 GPU。固定块大小下总工作量为 `O(n log n)`，
+  除返回结果外，GPU 使用两个 `O(n)` 缓冲区。
+- 设备、队列和计算管线首次使用时初始化，并在进程内缓存。着色器内嵌，运行时不需要
+  源码目录或外部 `.metallib`。每次调用单独分配共享缓冲区，并在 GPU 完成后复制结果。
+  不采用跨调用缓冲池，稳态时间包含每次分配、复制、命令提交和等待成本。
+- 默认 `Auto` 模式在设备不可用、初始化失败、缓冲区分配失败、输入超出 GPU 上限或
+  GPU 命令失败时，从原始输入回退 FastSort3。当前 GPU 索引上限为 `2^30` 个元素，
+  同时检查设备的 `maxBufferLength`；CPU 结果分配失败仍可能抛出 `std::bad_alloc`。
+
+```cpp
+std::string warmupError;
+FastSort4::WarmUp(warmupError); // 应用启动时预热，失败返回 false 并写入原因
+FastSort4 automatic; // 自动选择
+FastSort4 cpu(FastSort4::Mode::CpuOnly);
+FastSort4 gpu(FastSort4::Mode::MetalOnly); // 强制 GPU；失败抛出 std::runtime_error
+std::vector<int> result = automatic.Run(input);
+auto backend = automatic.GetLastBackendName();
+auto reason = automatic.GetLastFallbackReason();
+```
+
+`GetLastBackendName()` 返回实际执行路径：`Metal`、`CPU-ordered` 或 FastSort3 的
+`NEON`／`AVX2`／`scalar`；调用前为 `not-run`。仅失败回退时设置原因；小数组正常
+选择 CPU 不属于失败。诊断状态按实例保存，同一个实例不支持并发调用。
+`MetalOnly` 跳过 CPU 的规模及有序快捷路径；空输入仅检查后端可用性，无需提交 GPU 工作。
+
+### 构建与验证
+
+macOS 默认启用 Metal，需要可用的 Apple SDK 和 Objective-C++ 编译器；CPU 部分保持 C++14。
+CMake 最低版本为 3.16，推荐按本文原有命令使用 3.20+。Metal 后端单独启用 ARC，
+链接系统 Foundation 和 Metal 框架，不引入第三方依赖。
+
+```sh
+cmake -S . -B /tmp/toysort-fast4-release -DCMAKE_BUILD_TYPE=Release
+cmake --build /tmp/toysort-fast4-release -j 4
+ctest --test-dir /tmp/toysort-fast4-release --output-on-failure
+/tmp/toysort-fast4-release/toysort
+/tmp/toysort-fast4-release/sort_benchmark > /tmp/fast4.csv
+
+# 强制 GPU 路径；不能访问 GPU 时明确失败
+/tmp/toysort-fast4-release/sort_benchmark --tune --fast4-mode metal
+# CPU 路径对照
+/tmp/toysort-fast4-release/sort_benchmark --tune --fast4-mode cpu
+# 独立构建不包含 Metal 的版本
+cmake -S . -B /tmp/toysort-fast4-cpu -DCMAKE_BUILD_TYPE=Release -DFASTSORT4_ENABLE_METAL=OFF
+cmake --build /tmp/toysort-fast4-cpu -j 4
+ctest --test-dir /tmp/toysort-fast4-cpu -R fastsort4 --output-on-failure
+
+# CPU 包装层、回退和 GPU 调用的地址/未定义行为检查
+cmake -S . -B /tmp/toysort-fast4-sanitize -DCMAKE_BUILD_TYPE=Debug -DFASTSORT_SANITIZERS=ON
+cmake --build /tmp/toysort-fast4-sanitize --target fastsort4_test fastsort4_failure_test fastsort4_gpu_test -j 4
+ctest --test-dir /tmp/toysort-fast4-sanitize -R fastsort4 --output-on-failure
+
+# GPU 内存访问及 Metal API 验证（不用于测速）
+MTL_DEBUG_LAYER=1 MTL_SHADER_VALIDATION=1 MTL_SHADER_VALIDATION_REPORT_TO_STDERR=1 \
+MTL_SHADER_VALIDATION_ABORT_ON_FAULT=1 /tmp/toysort-fast4-release/fastsort4_gpu_test
+
+# 九组参数顺序调优，并执行最终配置的完整验证和四轮基准
+python3 benchmarks/tune_fast4.py --output /tmp/fast4-results
+```
+
+GPU 专项测试不可访问设备时返回 77，在 CTest 中标记为 **Skipped**；它同时检查自动
+CPU 回退。这不算 GPU 测试通过。调优脚本必须在有真实 GPU 访问权限的环境运行，
+将 77 视为失败。测试还用独立替身模拟写入部分结果后的命令失败，验证回退不会使用损坏结果。
+
+调优比较分块 128/256/512 与每线程归并输出 4/8/16，按种子 `20261004` 的十万／百万
+随机排列、全范围随机整数四项 GPU 中位耗时的几何平均选优，每组先通过 GPU 正确性测试。
+可用 `FASTSORT4_BLOCK_SIZE`、`FASTSORT4_MERGE_ITEMS`、`FASTSORT4_GPU_THRESHOLD` 覆盖默认值。
+十万规模两种随机分布均比 FastSort3 快至少 5% 时，候选启用阈值设为十万，否则设为百万；
+最终使用两个种子各复测两轮完整基准验证。
+
+`toysort` 和 `sort_benchmark` 在启动时调用 `FastSort4::WarmUp()`：初始化设备、队列和
+管线，再同步完成一次 4,096 个元素的 GPU 排序，实际执行块内排序及多轮归并。
+预热耗时单独输出，不计入正式排序；重复调用复用管线，但仍执行一次小排序。
+GPU 不可用时预热返回 false，自动模式继续使用 FastSort3，强制 Metal 基准则报错。
+`--fast4-mode cpu` 跳过 GPU 预热。预热样本独立于 `--max-size` 对正式基准的规模限制。
+
+CSV 保留原有列，注释记录每轮实际后端、回退原因、GPU 参数及 `startup_warmup_ms`。
+正式基准仍每场景预热一次、测量五次。系统 Metal 编译缓存可能已存在，启动预热耗时
+不能等同于清空系统缓存后的首次安装成本。原有 `toysort` 使用 `steady_clock` 墙钟计时，
+每次正式排序仍包含分配、复制、提交及 GPU 等待时间。
+
+实现参考：[GPU Merge Path 论文](https://davidbader.net/publication/2012-gm-ba/)、
+[Apple Metal 着色器验证](https://developer.apple.com/documentation/xcode/validating-your-apps-metal-shader-usage)。
+
+### FAST4 本机验收结果
+
+2026-10-04，Apple M3 Pro（14 核 GPU，18 GB 统一内存），macOS 26.6.2，
+Apple Clang 21.0.0，Release，CPU 后端 NEON，GPU 后端 Metal。
+九组参数选中 **分块 128、每线程归并 8 个输出**，调优四项几何平均耗时为
+**1.933515 ms**；默认 GPU 启用阈值为 **100,000** 个元素。
+这些是本机参数，不保证其他 GPU 上最优。
+
+两个种子各复测两轮，每场景预热一次、测量五次、报告中位数。下表是
+FastSort4 / FastSort3 的耗时比，小于 1 表示更快；全部 16 个重点结果通过：
+
+| 分布 | 元素数 | 种子 20261004 | 同种子复测 | 种子 314159 | 同种子复测 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 随机排列 | 1,000,000 | 0.208 | 0.267 | 0.302 | 0.327 |
+| 全范围随机整数 | 1,000,000 | 0.306 | 0.248 | 0.305 | 0.307 |
+| 随机排列 | 10,000,000 | 0.153 | 0.161 | 0.165 | 0.173 |
+| 全范围随机整数 | 10,000,000 | 0.155 | 0.169 | 0.160 | 0.160 |
+
+百万和千万随机数据相对 FastSort3 加速 **3.06–6.53 倍**。百万随机数据的
+中位耗时为 **3.22–4.82 ms**，千万为 **25.58–27.66 ms**。
+十万规模两种随机分布在四轮中耗时比为 **0.598–0.774**，支持选择十万的启用阈值。
+四轮完整 45 场景的等权几何平均耗时比分别为 **0.827、0.850、0.834、0.830**。
+
+上述四轮历史记录中，进程内第一次百万随机整数调用为 **34.5–38.8 ms**，包含初始化成本。
+此前 `toysort` 的单次对比不预热，第一次达到 GPU 阈值的排序承担初始化开销，
+后续排序复用管线，因此可能出现“百万耗时 44 ms、千万仅 31 ms”。这不是百万数据
+排序本身更慢。现在两个程序都在启动时单独预热 GPU，正式排序已排除该初始化开销；
+比较算法吞吐量仍建议使用 `sort_benchmark` 的多次测量中位数。
+更改默认值后，已有 CMake 缓存不会自动更新；旧构建可显式传入
+`-DFASTSORT4_GPU_THRESHOLD=100000 -DFASTSORT4_BLOCK_SIZE=128 -DFASTSORT4_MERGE_ITEMS=8`，
+或使用新的构建目录。
+
+存在明确退化：十万规模的近乎有序数据耗时约为 FastSort3 的 **3.66–3.85 倍**，
+16 种重复值约 **2.85–3.15 倍**，周期分布约 **2.72–2.80 倍**。
+部分百万重复值／周期数据也退化，最高约 **1.67 倍**。当前只检测完全有序／逆序，
+不根据采样识别近乎有序或低基数输入；没有所有输入均更快的保证。
+
+验证：最终 Release 全部 **11 项 CTest** 通过（GPU 未跳过），每组调优配置先通过
+**1,303 个 GPU／自动／强制 CPU 用例**；最终配置另通过 Metal API 与着色器验证。
+FastSort4 通用正确性（41,025 个输入）、故障回退测试通过 ASan/UBSan；
+同一 sanitizer 构建的 1,303 个 GPU／自动／CPU 专项用例另在真实设备上通过。
+原有 `toysort` 完整运行到千万规模，**100 条 `isCorrect` 均为 1**。
+禁用 Metal 的独立构建通过正确性与故障回退测试，GPU 专项明确跳过并验证自动 CPU 回退。
+
+原始数据：[首次完整测速](benchmarks/results/fast4-apple-arm64-release.csv)、
+[默认种子复测](benchmarks/results/fast4-apple-arm64-release-repeat.csv)、
+[独立种子完整测速](benchmarks/results/fast4-apple-arm64-confirmation.csv)、
+[独立种子复测](benchmarks/results/fast4-apple-arm64-confirmation-repeat.csv)、
+[FastSort3 对比](benchmarks/results/fast4-apple-arm64-comparison.csv)、
+[九组参数汇总](benchmarks/results/fast4-apple-arm64-tuning.csv)、
+[九组原始测速](benchmarks/results/fast4-apple-arm64-tuning-raw.csv)。
+
+加入启动预热后另行复核：`toysort` 单独报告 GPU 预热 **29.58 ms**，随后百万排序
+**4.67 ms**、千万排序 **35.34 ms**，100 条正确性结果仍全部为 1；完整 11 项 CTest
+再次通过。单次耗时会波动，不替代上面的多轮中位数验收。
+[启动预热后主程序输出](benchmarks/results/fast4-apple-arm64-startup-warmup.txt)、
+[启动预热后百万以内基准](benchmarks/results/fast4-apple-arm64-startup-warmup.csv)。

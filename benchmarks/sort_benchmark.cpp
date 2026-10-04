@@ -1,6 +1,7 @@
 #include "fastsort.h"
 #include "fastsort2.h"
 #include "fastsort3.h"
+#include "fastsort4.h"
 #include "stdsort.h"
 #include "stdstablesort.h"
 #include "sort_data.h"
@@ -14,9 +15,16 @@ int main(int argc, char** argv){
 		unsigned seed = 20261004;
 		std::size_t maxSize = 10000000;
 		bool tune = false;
+		FastSort4::Mode mode = FastSort4::Mode::Auto;
 		for(int i = 1; i < argc; ++i){
 			std::string option = argv[i];
-			if(option == "--tune"){
+			if(option == "--fast4-mode" && i + 1 < argc){
+				std::string value = argv[++i];
+				if(value == "auto") mode = FastSort4::Mode::Auto;
+				else if(value == "cpu") mode = FastSort4::Mode::CpuOnly;
+				else if(value == "metal") mode = FastSort4::Mode::MetalOnly;
+				else throw std::invalid_argument("fast4-mode must be auto, cpu or metal");
+			}else if(option == "--tune"){
 				tune = true;
 			}else if((option == "--seed" || option == "--max-size") && i + 1 < argc){
 				std::string text = argv[++i];
@@ -31,21 +39,36 @@ int main(int argc, char** argv){
 					maxSize = static_cast<std::size_t>(value);
 				}
 			}else{
-				throw std::invalid_argument("usage: sort_benchmark [--tune] [--seed N] [--max-size N]");
+				throw std::invalid_argument("usage: sort_benchmark [--tune] [--seed N] [--max-size N] [--fast4-mode auto|cpu|metal]");
 			}
 		}
 		FastSort fast;
 		FastSort2 fast2;
 		FastSort3 fast3;
+		FastSort4 fast4(mode);
 		StdSort standard;
 		StdStableSort stable;
-		Sort* algorithms[] = {&fast, &fast2, &fast3, &standard, &stable};
+		Sort* algorithms[] = {&fast, &fast2, &fast3, &fast4, &standard, &stable};
 		const std::size_t algorithmCount = sizeof(algorithms) / sizeof(algorithms[0]);
 		std::size_t standardIndex = 0;
 		while(algorithms[standardIndex] != &standard) ++standardIndex;
 		std::cout << "# seed=" << seed << ", warmups=1, repetitions=5, clock=steady_clock, includes Run copy\n";
 		std::cout << "# FastSort3 backend=" << FastSort3::GetBackendName() << '\n';
 		std::cout << "distribution,size,algorithm,median_ms,ratio_to_std\n";
+		std::cout << "# FastSort4 block=" << FastSort4::GetBlockSize()
+			<< ", merge_items=" << FastSort4::GetMergeItems() << ", threshold=" << FastSort4::GetGpuThreshold() << '\n';
+		if(mode != FastSort4::Mode::CpuOnly){
+			std::string warmupError;
+			auto warmupBegin = std::chrono::steady_clock::now();
+			bool gpuReady = FastSort4::WarmUp(warmupError);
+			double warmupMs = std::chrono::duration<double, std::milli>(
+				std::chrono::steady_clock::now() - warmupBegin).count();
+			std::cout << "# FastSort4 startup_warmup_ms=" << warmupMs
+				<< ", backend=" << (gpuReady ? "Metal" : "unavailable")
+				<< ", fallback=" << warmupError << '\n';
+			if(!gpuReady && mode == FastSort4::Mode::MetalOnly)
+				throw std::runtime_error("FastSort4 warmup: " + warmupError);
+		}
 		std::size_t group = 0;
 		for(std::size_t size : {1000u, 10000u, 100000u, 1000000u, 10000000u}){
 			if(size > maxSize || (tune && (size < 100000 || size > 1000000))) continue;
@@ -61,6 +84,9 @@ int main(int argc, char** argv){
 						std::vector<int> result = algorithms[index]->Run(input);
 						auto end = std::chrono::steady_clock::now();
 						if(result != expected) throw std::runtime_error(algorithms[index]->GetName() + " failed " + distribution);
+						if(algorithms[index] == &fast4)
+							std::cout << "# FastSort4 " << distribution << ',' << size << ", round=" << round
+								<< ", backend=" << fast4.GetLastBackendName() << ", fallback=" << fast4.GetLastFallbackReason() << '\n';
 						if(round != 0) samples[index].push_back(std::chrono::duration<double, std::milli>(end - begin).count());
 					}
 				}

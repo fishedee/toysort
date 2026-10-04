@@ -1,4 +1,7 @@
-#if defined(TEST_FASTSORT3)
+#if defined(TEST_FASTSORT4)
+#include "fastsort4.h"
+using TestedSort = FastSort4;
+#elif defined(TEST_FASTSORT3)
 #include "fastsort3.h"
 using TestedSort = FastSort3;
 #elif defined(TEST_FASTSORT2)
@@ -73,7 +76,7 @@ int main(){
 			for(int i = 0; i < 20; ++i) input[random() % input.size()] = i % 2 ? INT_MIN : INT_MAX;
 			check(input, "sparse outliers");
 		}
-#if defined(TEST_FASTSORT2) || defined(TEST_FASTSORT3)
+#if defined(TEST_FASTSORT2) || defined(TEST_FASTSORT3) || defined(TEST_FASTSORT4)
 		// Exercise sampling/block edges and skewed partitions independently of seeds.
 		for(std::size_t size : {30u, 32u, 34u, 62u, 64u, 66u, 126u, 128u, 130u,
 			254u, 256u, 258u, 1023u, 1025u, 100000u}){
@@ -91,7 +94,7 @@ int main(){
 			check(input, "rotated ascending");
 		}
 #endif
-#ifdef TEST_FASTSORT3
+#if defined(TEST_FASTSORT3) || defined(TEST_FASTSORT4)
 		// Every tail length and lane alignment around all supported block sizes.
 		for(std::size_t size = 2; size <= 530; ++size){
 			std::vector<int> input(size);

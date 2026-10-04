@@ -1,0 +1,545 @@
+# seed=20261004, warmups=1, repetitions=5, clock=steady_clock, includes Run copy
+# FastSort3 backend=NEON
+distribution,size,algorithm,median_ms,ratio_to_std
+# FastSort4 block=128, merge_items=8, threshold=100000
+# FastSort4 first_call size=1000000, ms=34.5333, backend=Metal, fallback=
+# FastSort4 permutation,1000, round=0, backend=NEON, fallback=
+# FastSort4 permutation,1000, round=1, backend=NEON, fallback=
+# FastSort4 permutation,1000, round=2, backend=NEON, fallback=
+# FastSort4 permutation,1000, round=3, backend=NEON, fallback=
+# FastSort4 permutation,1000, round=4, backend=NEON, fallback=
+# FastSort4 permutation,1000, round=5, backend=NEON, fallback=
+permutation,1000,FastSort,0.006291,1.161344
+permutation,1000,FastSort2,0.007083,1.307550
+permutation,1000,FastSort3,0.006583,1.215248
+permutation,1000,FastSort4,0.006458,1.192173
+permutation,1000,StdSort,0.005417,1.000000
+permutation,1000,StdStableSort,0.014167,2.615285
+# FastSort4 random,1000, round=0, backend=NEON, fallback=
+# FastSort4 random,1000, round=1, backend=NEON, fallback=
+# FastSort4 random,1000, round=2, backend=NEON, fallback=
+# FastSort4 random,1000, round=3, backend=NEON, fallback=
+# FastSort4 random,1000, round=4, backend=NEON, fallback=
+# FastSort4 random,1000, round=5, backend=NEON, fallback=
+random,1000,FastSort,0.006333,1.169313
+random,1000,FastSort2,0.007583,1.400111
+random,1000,FastSort3,0.006792,1.254062
+random,1000,FastSort4,0.006833,1.261632
+random,1000,StdSort,0.005416,1.000000
+random,1000,StdStableSort,0.014958,2.761817
+# FastSort4 sorted,1000, round=0, backend=NEON, fallback=
+# FastSort4 sorted,1000, round=1, backend=NEON, fallback=
+# FastSort4 sorted,1000, round=2, backend=NEON, fallback=
+# FastSort4 sorted,1000, round=3, backend=NEON, fallback=
+# FastSort4 sorted,1000, round=4, backend=NEON, fallback=
+# FastSort4 sorted,1000, round=5, backend=NEON, fallback=
+sorted,1000,FastSort,0.000542,0.619429
+sorted,1000,FastSort2,0.000583,0.666286
+sorted,1000,FastSort3,0.000542,0.619429
+sorted,1000,FastSort4,0.000584,0.667429
+sorted,1000,StdSort,0.000875,1.000000
+sorted,1000,StdStableSort,0.003167,3.619429
+# FastSort4 reversed,1000, round=0, backend=NEON, fallback=
+# FastSort4 reversed,1000, round=1, backend=NEON, fallback=
+# FastSort4 reversed,1000, round=2, backend=NEON, fallback=
+# FastSort4 reversed,1000, round=3, backend=NEON, fallback=
+# FastSort4 reversed,1000, round=4, backend=NEON, fallback=
+# FastSort4 reversed,1000, round=5, backend=NEON, fallback=
+reversed,1000,FastSort,0.000708,0.485597
+reversed,1000,FastSort2,0.000708,0.485597
+reversed,1000,FastSort3,0.000709,0.486283
+reversed,1000,FastSort4,0.000708,0.485597
+reversed,1000,StdSort,0.001458,1.000000
+reversed,1000,StdStableSort,0.014875,10.202332
+# FastSort4 nearly_sorted,1000, round=0, backend=NEON, fallback=
+# FastSort4 nearly_sorted,1000, round=1, backend=NEON, fallback=
+# FastSort4 nearly_sorted,1000, round=2, backend=NEON, fallback=
+# FastSort4 nearly_sorted,1000, round=3, backend=NEON, fallback=
+# FastSort4 nearly_sorted,1000, round=4, backend=NEON, fallback=
+# FastSort4 nearly_sorted,1000, round=5, backend=NEON, fallback=
+nearly_sorted,1000,FastSort,0.001417,1.172043
+nearly_sorted,1000,FastSort2,0.005708,4.721257
+nearly_sorted,1000,FastSort3,0.005667,4.687345
+nearly_sorted,1000,FastSort4,0.005709,4.722084
+nearly_sorted,1000,StdSort,0.001209,1.000000
+nearly_sorted,1000,StdStableSort,0.003667,3.033085
+# FastSort4 duplicates,1000, round=0, backend=NEON, fallback=
+# FastSort4 duplicates,1000, round=1, backend=NEON, fallback=
+# FastSort4 duplicates,1000, round=2, backend=NEON, fallback=
+# FastSort4 duplicates,1000, round=3, backend=NEON, fallback=
+# FastSort4 duplicates,1000, round=4, backend=NEON, fallback=
+# FastSort4 duplicates,1000, round=5, backend=NEON, fallback=
+duplicates,1000,FastSort,0.003208,1.241486
+duplicates,1000,FastSort2,0.004083,1.580108
+duplicates,1000,FastSort3,0.003667,1.419118
+duplicates,1000,FastSort4,0.003625,1.402864
+duplicates,1000,StdSort,0.002584,1.000000
+duplicates,1000,StdStableSort,0.014125,5.466331
+# FastSort4 equal,1000, round=0, backend=NEON, fallback=
+# FastSort4 equal,1000, round=1, backend=NEON, fallback=
+# FastSort4 equal,1000, round=2, backend=NEON, fallback=
+# FastSort4 equal,1000, round=3, backend=NEON, fallback=
+# FastSort4 equal,1000, round=4, backend=NEON, fallback=
+# FastSort4 equal,1000, round=5, backend=NEON, fallback=
+equal,1000,FastSort,0.000583,0.518222
+equal,1000,FastSort2,0.000583,0.518222
+equal,1000,FastSort3,0.000583,0.518222
+equal,1000,FastSort4,0.000583,0.518222
+equal,1000,StdSort,0.001125,1.000000
+equal,1000,StdStableSort,0.001375,1.222222
+# FastSort4 periodic,1000, round=0, backend=NEON, fallback=
+# FastSort4 periodic,1000, round=1, backend=NEON, fallback=
+# FastSort4 periodic,1000, round=2, backend=NEON, fallback=
+# FastSort4 periodic,1000, round=3, backend=NEON, fallback=
+# FastSort4 periodic,1000, round=4, backend=NEON, fallback=
+# FastSort4 periodic,1000, round=5, backend=NEON, fallback=
+periodic,1000,FastSort,0.003792,0.957818
+periodic,1000,FastSort2,0.005000,1.262945
+periodic,1000,FastSort3,0.004542,1.147259
+periodic,1000,FastSort4,0.004625,1.168224
+periodic,1000,StdSort,0.003959,1.000000
+periodic,1000,StdStableSort,0.011583,2.925739
+# FastSort4 organ_pipe,1000, round=0, backend=NEON, fallback=
+# FastSort4 organ_pipe,1000, round=1, backend=NEON, fallback=
+# FastSort4 organ_pipe,1000, round=2, backend=NEON, fallback=
+# FastSort4 organ_pipe,1000, round=3, backend=NEON, fallback=
+# FastSort4 organ_pipe,1000, round=4, backend=NEON, fallback=
+# FastSort4 organ_pipe,1000, round=5, backend=NEON, fallback=
+organ_pipe,1000,FastSort,0.007625,0.706607
+organ_pipe,1000,FastSort2,0.012667,1.173849
+organ_pipe,1000,FastSort3,0.012250,1.135205
+organ_pipe,1000,FastSort4,0.012208,1.131313
+organ_pipe,1000,StdSort,0.010791,1.000000
+organ_pipe,1000,StdStableSort,0.010750,0.996201
+# FastSort4 permutation,10000, round=0, backend=NEON, fallback=
+# FastSort4 permutation,10000, round=1, backend=NEON, fallback=
+# FastSort4 permutation,10000, round=2, backend=NEON, fallback=
+# FastSort4 permutation,10000, round=3, backend=NEON, fallback=
+# FastSort4 permutation,10000, round=4, backend=NEON, fallback=
+# FastSort4 permutation,10000, round=5, backend=NEON, fallback=
+permutation,10000,FastSort,0.125125,1.208458
+permutation,10000,FastSort2,0.115083,1.111473
+permutation,10000,FastSort3,0.090709,0.876068
+permutation,10000,FastSort4,0.088542,0.855140
+permutation,10000,StdSort,0.103541,1.000000
+permutation,10000,StdStableSort,0.228708,2.208864
+# FastSort4 random,10000, round=0, backend=NEON, fallback=
+# FastSort4 random,10000, round=1, backend=NEON, fallback=
+# FastSort4 random,10000, round=2, backend=NEON, fallback=
+# FastSort4 random,10000, round=3, backend=NEON, fallback=
+# FastSort4 random,10000, round=4, backend=NEON, fallback=
+# FastSort4 random,10000, round=5, backend=NEON, fallback=
+random,10000,FastSort,0.133583,1.090100
+random,10000,FastSort2,0.114125,0.931313
+random,10000,FastSort3,0.082542,0.673581
+random,10000,FastSort4,0.083958,0.685137
+random,10000,StdSort,0.122542,1.000000
+random,10000,StdStableSort,0.232083,1.893906
+# FastSort4 sorted,10000, round=0, backend=NEON, fallback=
+# FastSort4 sorted,10000, round=1, backend=NEON, fallback=
+# FastSort4 sorted,10000, round=2, backend=NEON, fallback=
+# FastSort4 sorted,10000, round=3, backend=NEON, fallback=
+# FastSort4 sorted,10000, round=4, backend=NEON, fallback=
+# FastSort4 sorted,10000, round=5, backend=NEON, fallback=
+sorted,10000,FastSort,0.005708,0.709774
+sorted,10000,FastSort2,0.005583,0.694230
+sorted,10000,FastSort3,0.005583,0.694230
+sorted,10000,FastSort4,0.005583,0.694230
+sorted,10000,StdSort,0.008042,1.000000
+sorted,10000,StdStableSort,0.063917,7.947899
+# FastSort4 reversed,10000, round=0, backend=NEON, fallback=
+# FastSort4 reversed,10000, round=1, backend=NEON, fallback=
+# FastSort4 reversed,10000, round=2, backend=NEON, fallback=
+# FastSort4 reversed,10000, round=3, backend=NEON, fallback=
+# FastSort4 reversed,10000, round=4, backend=NEON, fallback=
+# FastSort4 reversed,10000, round=5, backend=NEON, fallback=
+reversed,10000,FastSort,0.007125,0.536077
+reversed,10000,FastSort2,0.006875,0.517267
+reversed,10000,FastSort3,0.006958,0.523512
+reversed,10000,FastSort4,0.006917,0.520427
+reversed,10000,StdSort,0.013291,1.000000
+reversed,10000,StdStableSort,0.114208,8.592882
+# FastSort4 nearly_sorted,10000, round=0, backend=NEON, fallback=
+# FastSort4 nearly_sorted,10000, round=1, backend=NEON, fallback=
+# FastSort4 nearly_sorted,10000, round=2, backend=NEON, fallback=
+# FastSort4 nearly_sorted,10000, round=3, backend=NEON, fallback=
+# FastSort4 nearly_sorted,10000, round=4, backend=NEON, fallback=
+# FastSort4 nearly_sorted,10000, round=5, backend=NEON, fallback=
+nearly_sorted,10000,FastSort,0.021000,1.148043
+nearly_sorted,10000,FastSort2,0.061292,3.350754
+nearly_sorted,10000,FastSort3,0.055500,3.034113
+nearly_sorted,10000,FastSort4,0.054959,3.004538
+nearly_sorted,10000,StdSort,0.018292,1.000000
+nearly_sorted,10000,StdStableSort,0.093584,5.116116
+# FastSort4 duplicates,10000, round=0, backend=NEON, fallback=
+# FastSort4 duplicates,10000, round=1, backend=NEON, fallback=
+# FastSort4 duplicates,10000, round=2, backend=NEON, fallback=
+# FastSort4 duplicates,10000, round=3, backend=NEON, fallback=
+# FastSort4 duplicates,10000, round=4, backend=NEON, fallback=
+# FastSort4 duplicates,10000, round=5, backend=NEON, fallback=
+duplicates,10000,FastSort,0.033500,1.112033
+duplicates,10000,FastSort2,0.034792,1.154921
+duplicates,10000,FastSort3,0.027833,0.923917
+duplicates,10000,FastSort4,0.027500,0.912863
+duplicates,10000,StdSort,0.030125,1.000000
+duplicates,10000,StdStableSort,0.197917,6.569859
+# FastSort4 equal,10000, round=0, backend=NEON, fallback=
+# FastSort4 equal,10000, round=1, backend=NEON, fallback=
+# FastSort4 equal,10000, round=2, backend=NEON, fallback=
+# FastSort4 equal,10000, round=3, backend=NEON, fallback=
+# FastSort4 equal,10000, round=4, backend=NEON, fallback=
+# FastSort4 equal,10000, round=5, backend=NEON, fallback=
+equal,10000,FastSort,0.005875,0.532108
+equal,10000,FastSort2,0.005833,0.528304
+equal,10000,FastSort3,0.005834,0.528394
+equal,10000,FastSort4,0.005833,0.528304
+equal,10000,StdSort,0.011041,1.000000
+equal,10000,StdStableSort,0.023375,2.117109
+# FastSort4 periodic,10000, round=0, backend=NEON, fallback=
+# FastSort4 periodic,10000, round=1, backend=NEON, fallback=
+# FastSort4 periodic,10000, round=2, backend=NEON, fallback=
+# FastSort4 periodic,10000, round=3, backend=NEON, fallback=
+# FastSort4 periodic,10000, round=4, backend=NEON, fallback=
+# FastSort4 periodic,10000, round=5, backend=NEON, fallback=
+periodic,10000,FastSort,0.042791,1.255457
+periodic,10000,FastSort2,0.033917,0.995100
+periodic,10000,FastSort3,0.027500,0.806830
+periodic,10000,FastSort4,0.027209,0.798292
+periodic,10000,StdSort,0.034084,1.000000
+periodic,10000,StdStableSort,0.175750,5.156378
+# FastSort4 organ_pipe,10000, round=0, backend=NEON, fallback=
+# FastSort4 organ_pipe,10000, round=1, backend=NEON, fallback=
+# FastSort4 organ_pipe,10000, round=2, backend=NEON, fallback=
+# FastSort4 organ_pipe,10000, round=3, backend=NEON, fallback=
+# FastSort4 organ_pipe,10000, round=4, backend=NEON, fallback=
+# FastSort4 organ_pipe,10000, round=5, backend=NEON, fallback=
+organ_pipe,10000,FastSort,0.092000,0.501704
+organ_pipe,10000,FastSort2,0.121708,0.663711
+organ_pipe,10000,FastSort3,0.110125,0.600545
+organ_pipe,10000,FastSort4,0.111875,0.610089
+organ_pipe,10000,StdSort,0.183375,1.000000
+organ_pipe,10000,StdStableSort,0.096042,0.523746
+# FastSort4 permutation,100000, round=0, backend=Metal, fallback=
+# FastSort4 permutation,100000, round=1, backend=Metal, fallback=
+# FastSort4 permutation,100000, round=2, backend=Metal, fallback=
+# FastSort4 permutation,100000, round=3, backend=Metal, fallback=
+# FastSort4 permutation,100000, round=4, backend=Metal, fallback=
+# FastSort4 permutation,100000, round=5, backend=Metal, fallback=
+permutation,100000,FastSort,1.774417,1.222225
+permutation,100000,FastSort2,1.402542,0.966076
+permutation,100000,FastSort3,1.323375,0.911546
+permutation,100000,FastSort4,0.813959,0.560658
+permutation,100000,StdSort,1.451792,1.000000
+permutation,100000,StdStableSort,3.191875,2.198576
+# FastSort4 random,100000, round=0, backend=Metal, fallback=
+# FastSort4 random,100000, round=1, backend=Metal, fallback=
+# FastSort4 random,100000, round=2, backend=Metal, fallback=
+# FastSort4 random,100000, round=3, backend=Metal, fallback=
+# FastSort4 random,100000, round=4, backend=Metal, fallback=
+# FastSort4 random,100000, round=5, backend=Metal, fallback=
+random,100000,FastSort,1.759000,1.176227
+random,100000,FastSort2,1.405833,0.940068
+random,100000,FastSort3,1.344916,0.899333
+random,100000,FastSort4,1.040500,0.695773
+random,100000,StdSort,1.495459,1.000000
+random,100000,StdStableSort,3.190875,2.133709
+# FastSort4 sorted,100000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 sorted,100000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 sorted,100000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 sorted,100000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 sorted,100000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 sorted,100000, round=5, backend=CPU-ordered, fallback=
+sorted,100000,FastSort,0.054584,0.688757
+sorted,100000,FastSort2,0.054542,0.688227
+sorted,100000,FastSort3,0.054542,0.688227
+sorted,100000,FastSort4,0.054042,0.681918
+sorted,100000,StdSort,0.079250,1.000000
+sorted,100000,StdStableSort,0.634167,8.002107
+# FastSort4 reversed,100000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 reversed,100000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 reversed,100000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 reversed,100000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 reversed,100000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 reversed,100000, round=5, backend=CPU-ordered, fallback=
+reversed,100000,FastSort,0.071500,0.538606
+reversed,100000,FastSort2,0.068542,0.516324
+reversed,100000,FastSort3,0.068459,0.515699
+reversed,100000,FastSort4,0.068333,0.514750
+reversed,100000,StdSort,0.132750,1.000000
+reversed,100000,StdStableSort,2.374792,17.889205
+# FastSort4 nearly_sorted,100000, round=0, backend=Metal, fallback=
+# FastSort4 nearly_sorted,100000, round=1, backend=Metal, fallback=
+# FastSort4 nearly_sorted,100000, round=2, backend=Metal, fallback=
+# FastSort4 nearly_sorted,100000, round=3, backend=Metal, fallback=
+# FastSort4 nearly_sorted,100000, round=4, backend=Metal, fallback=
+# FastSort4 nearly_sorted,100000, round=5, backend=Metal, fallback=
+nearly_sorted,100000,FastSort,0.329334,1.247874
+nearly_sorted,100000,FastSort2,0.326542,1.237295
+nearly_sorted,100000,FastSort3,0.273500,1.036315
+nearly_sorted,100000,FastSort4,1.004417,3.805821
+nearly_sorted,100000,StdSort,0.263916,1.000000
+nearly_sorted,100000,StdStableSort,1.321875,5.008696
+# FastSort4 duplicates,100000, round=0, backend=Metal, fallback=
+# FastSort4 duplicates,100000, round=1, backend=Metal, fallback=
+# FastSort4 duplicates,100000, round=2, backend=Metal, fallback=
+# FastSort4 duplicates,100000, round=3, backend=Metal, fallback=
+# FastSort4 duplicates,100000, round=4, backend=Metal, fallback=
+# FastSort4 duplicates,100000, round=5, backend=Metal, fallback=
+duplicates,100000,FastSort,0.466709,1.156652
+duplicates,100000,FastSort2,0.352541,0.873708
+duplicates,100000,FastSort3,0.324084,0.803182
+duplicates,100000,FastSort4,0.943125,2.337361
+duplicates,100000,StdSort,0.403500,1.000000
+duplicates,100000,StdStableSort,2.784791,6.901589
+# FastSort4 equal,100000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 equal,100000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 equal,100000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 equal,100000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 equal,100000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 equal,100000, round=5, backend=CPU-ordered, fallback=
+equal,100000,FastSort,0.056500,0.445464
+equal,100000,FastSort2,0.056542,0.445795
+equal,100000,FastSort3,0.056583,0.446119
+equal,100000,FastSort4,0.055708,0.439220
+equal,100000,StdSort,0.126834,1.000000
+equal,100000,StdStableSort,0.282084,2.224041
+# FastSort4 periodic,100000, round=0, backend=Metal, fallback=
+# FastSort4 periodic,100000, round=1, backend=Metal, fallback=
+# FastSort4 periodic,100000, round=2, backend=Metal, fallback=
+# FastSort4 periodic,100000, round=3, backend=Metal, fallback=
+# FastSort4 periodic,100000, round=4, backend=Metal, fallback=
+# FastSort4 periodic,100000, round=5, backend=Metal, fallback=
+periodic,100000,FastSort,0.474542,1.043904
+periodic,100000,FastSort2,0.392916,0.864342
+periodic,100000,FastSort3,0.371583,0.817413
+periodic,100000,FastSort4,1.041334,2.290741
+periodic,100000,StdSort,0.454584,1.000000
+periodic,100000,StdStableSort,2.510459,5.522541
+# FastSort4 organ_pipe,100000, round=0, backend=Metal, fallback=
+# FastSort4 organ_pipe,100000, round=1, backend=Metal, fallback=
+# FastSort4 organ_pipe,100000, round=2, backend=Metal, fallback=
+# FastSort4 organ_pipe,100000, round=3, backend=Metal, fallback=
+# FastSort4 organ_pipe,100000, round=4, backend=Metal, fallback=
+# FastSort4 organ_pipe,100000, round=5, backend=Metal, fallback=
+organ_pipe,100000,FastSort,1.307250,0.496024
+organ_pipe,100000,FastSort2,1.482917,0.562679
+organ_pipe,100000,FastSort3,1.419209,0.538506
+organ_pipe,100000,FastSort4,1.054500,0.400120
+organ_pipe,100000,StdSort,2.635458,1.000000
+organ_pipe,100000,StdStableSort,1.640542,0.622488
+# FastSort4 permutation,1000000, round=0, backend=Metal, fallback=
+# FastSort4 permutation,1000000, round=1, backend=Metal, fallback=
+# FastSort4 permutation,1000000, round=2, backend=Metal, fallback=
+# FastSort4 permutation,1000000, round=3, backend=Metal, fallback=
+# FastSort4 permutation,1000000, round=4, backend=Metal, fallback=
+# FastSort4 permutation,1000000, round=5, backend=Metal, fallback=
+permutation,1000000,FastSort,19.835333,1.221742
+permutation,1000000,FastSort2,15.423292,0.949986
+permutation,1000000,FastSort3,14.600917,0.899332
+permutation,1000000,FastSort4,3.894125,0.239856
+permutation,1000000,StdSort,16.235292,1.000000
+permutation,1000000,StdStableSort,36.504833,2.248486
+# FastSort4 random,1000000, round=0, backend=Metal, fallback=
+# FastSort4 random,1000000, round=1, backend=Metal, fallback=
+# FastSort4 random,1000000, round=2, backend=Metal, fallback=
+# FastSort4 random,1000000, round=3, backend=Metal, fallback=
+# FastSort4 random,1000000, round=4, backend=Metal, fallback=
+# FastSort4 random,1000000, round=5, backend=Metal, fallback=
+random,1000000,FastSort,19.415666,1.190847
+random,1000000,FastSort2,15.402750,0.944717
+random,1000000,FastSort3,14.509500,0.889930
+random,1000000,FastSort4,3.603834,0.221039
+random,1000000,StdSort,16.304083,1.000000
+random,1000000,StdStableSort,36.600834,2.244888
+# FastSort4 sorted,1000000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 sorted,1000000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 sorted,1000000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 sorted,1000000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 sorted,1000000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 sorted,1000000, round=5, backend=CPU-ordered, fallback=
+sorted,1000000,FastSort,0.594541,0.716027
+sorted,1000000,FastSort2,0.581667,0.700523
+sorted,1000000,FastSort3,0.586458,0.706293
+sorted,1000000,FastSort4,0.582167,0.701125
+sorted,1000000,StdSort,0.830333,1.000000
+sorted,1000000,StdStableSort,6.913708,8.326428
+# FastSort4 reversed,1000000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 reversed,1000000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 reversed,1000000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 reversed,1000000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 reversed,1000000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 reversed,1000000, round=5, backend=CPU-ordered, fallback=
+reversed,1000000,FastSort,0.716000,0.558593
+reversed,1000000,FastSort2,0.711833,0.555342
+reversed,1000000,FastSort3,0.709125,0.553229
+reversed,1000000,FastSort4,0.705333,0.550271
+reversed,1000000,StdSort,1.281792,1.000000
+reversed,1000000,StdStableSort,17.278917,13.480282
+# FastSort4 nearly_sorted,1000000, round=0, backend=Metal, fallback=
+# FastSort4 nearly_sorted,1000000, round=1, backend=Metal, fallback=
+# FastSort4 nearly_sorted,1000000, round=2, backend=Metal, fallback=
+# FastSort4 nearly_sorted,1000000, round=3, backend=Metal, fallback=
+# FastSort4 nearly_sorted,1000000, round=4, backend=Metal, fallback=
+# FastSort4 nearly_sorted,1000000, round=5, backend=Metal, fallback=
+nearly_sorted,1000000,FastSort,4.242417,1.240805
+nearly_sorted,1000000,FastSort2,7.130042,2.085366
+nearly_sorted,1000000,FastSort3,6.475042,1.893794
+nearly_sorted,1000000,FastSort4,4.594458,1.343769
+nearly_sorted,1000000,StdSort,3.419084,1.000000
+nearly_sorted,1000000,StdStableSort,15.198042,4.445062
+# FastSort4 duplicates,1000000, round=0, backend=Metal, fallback=
+# FastSort4 duplicates,1000000, round=1, backend=Metal, fallback=
+# FastSort4 duplicates,1000000, round=2, backend=Metal, fallback=
+# FastSort4 duplicates,1000000, round=3, backend=Metal, fallback=
+# FastSort4 duplicates,1000000, round=4, backend=Metal, fallback=
+# FastSort4 duplicates,1000000, round=5, backend=Metal, fallback=
+duplicates,1000000,FastSort,4.822333,0.957081
+duplicates,1000000,FastSort2,3.323459,0.659602
+duplicates,1000000,FastSort3,3.029333,0.601227
+duplicates,1000000,FastSort4,4.637167,0.920332
+duplicates,1000000,StdSort,5.038583,1.000000
+duplicates,1000000,StdStableSort,27.954917,5.548170
+# FastSort4 equal,1000000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 equal,1000000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 equal,1000000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 equal,1000000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 equal,1000000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 equal,1000000, round=5, backend=CPU-ordered, fallback=
+equal,1000000,FastSort,0.587166,0.529973
+equal,1000000,FastSort2,0.576958,0.520759
+equal,1000000,FastSort3,0.589208,0.531816
+equal,1000000,FastSort4,0.564500,0.509515
+equal,1000000,StdSort,1.107917,1.000000
+equal,1000000,StdStableSort,3.921917,3.539901
+# FastSort4 periodic,1000000, round=0, backend=Metal, fallback=
+# FastSort4 periodic,1000000, round=1, backend=Metal, fallback=
+# FastSort4 periodic,1000000, round=2, backend=Metal, fallback=
+# FastSort4 periodic,1000000, round=3, backend=Metal, fallback=
+# FastSort4 periodic,1000000, round=4, backend=Metal, fallback=
+# FastSort4 periodic,1000000, round=5, backend=Metal, fallback=
+periodic,1000000,FastSort,4.542833,1.104909
+periodic,1000000,FastSort2,3.367542,0.819054
+periodic,1000000,FastSort3,3.046709,0.741021
+periodic,1000000,FastSort4,5.076958,1.234819
+periodic,1000000,StdSort,4.111500,1.000000
+periodic,1000000,StdStableSort,24.091875,5.859632
+# FastSort4 organ_pipe,1000000, round=0, backend=Metal, fallback=
+# FastSort4 organ_pipe,1000000, round=1, backend=Metal, fallback=
+# FastSort4 organ_pipe,1000000, round=2, backend=Metal, fallback=
+# FastSort4 organ_pipe,1000000, round=3, backend=Metal, fallback=
+# FastSort4 organ_pipe,1000000, round=4, backend=Metal, fallback=
+# FastSort4 organ_pipe,1000000, round=5, backend=Metal, fallback=
+organ_pipe,1000000,FastSort,13.830791,0.411589
+organ_pipe,1000000,FastSort2,15.551959,0.462809
+organ_pipe,1000000,FastSort3,14.648875,0.435934
+organ_pipe,1000000,FastSort4,4.812125,0.143203
+organ_pipe,1000000,StdSort,33.603417,1.000000
+organ_pipe,1000000,StdStableSort,13.765167,0.409636
+# FastSort4 permutation,10000000, round=0, backend=Metal, fallback=
+# FastSort4 permutation,10000000, round=1, backend=Metal, fallback=
+# FastSort4 permutation,10000000, round=2, backend=Metal, fallback=
+# FastSort4 permutation,10000000, round=3, backend=Metal, fallback=
+# FastSort4 permutation,10000000, round=4, backend=Metal, fallback=
+# FastSort4 permutation,10000000, round=5, backend=Metal, fallback=
+permutation,10000000,FastSort,216.455125,1.220984
+permutation,10000000,FastSort2,166.796000,0.940866
+permutation,10000000,FastSort3,158.991333,0.896841
+permutation,10000000,FastSort4,25.623833,0.144539
+permutation,10000000,StdSort,177.279208,1.000000
+permutation,10000000,StdStableSort,418.144709,2.358679
+# FastSort4 random,10000000, round=0, backend=Metal, fallback=
+# FastSort4 random,10000000, round=1, backend=Metal, fallback=
+# FastSort4 random,10000000, round=2, backend=Metal, fallback=
+# FastSort4 random,10000000, round=3, backend=Metal, fallback=
+# FastSort4 random,10000000, round=4, backend=Metal, fallback=
+# FastSort4 random,10000000, round=5, backend=Metal, fallback=
+random,10000000,FastSort,216.790709,1.224443
+random,10000000,FastSort2,168.458500,0.951461
+random,10000000,FastSort3,159.802709,0.902572
+random,10000000,FastSort4,26.942875,0.152174
+random,10000000,StdSort,177.052500,1.000000
+random,10000000,StdStableSort,418.062041,2.361232
+# FastSort4 sorted,10000000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 sorted,10000000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 sorted,10000000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 sorted,10000000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 sorted,10000000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 sorted,10000000, round=5, backend=CPU-ordered, fallback=
+sorted,10000000,FastSort,5.868083,0.703077
+sorted,10000000,FastSort2,6.084708,0.729031
+sorted,10000000,FastSort3,6.055833,0.725572
+sorted,10000000,FastSort4,6.051875,0.725097
+sorted,10000000,StdSort,8.346292,1.000000
+sorted,10000000,StdStableSort,101.539584,12.165832
+# FastSort4 reversed,10000000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 reversed,10000000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 reversed,10000000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 reversed,10000000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 reversed,10000000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 reversed,10000000, round=5, backend=CPU-ordered, fallback=
+reversed,10000000,FastSort,7.368500,0.543573
+reversed,10000000,FastSort2,7.470042,0.551064
+reversed,10000000,FastSort3,7.420083,0.547379
+reversed,10000000,FastSort4,7.352792,0.542415
+reversed,10000000,StdSort,13.555666,1.000000
+reversed,10000000,StdStableSort,141.946458,10.471375
+# FastSort4 nearly_sorted,10000000, round=0, backend=Metal, fallback=
+# FastSort4 nearly_sorted,10000000, round=1, backend=Metal, fallback=
+# FastSort4 nearly_sorted,10000000, round=2, backend=Metal, fallback=
+# FastSort4 nearly_sorted,10000000, round=3, backend=Metal, fallback=
+# FastSort4 nearly_sorted,10000000, round=4, backend=Metal, fallback=
+# FastSort4 nearly_sorted,10000000, round=5, backend=Metal, fallback=
+nearly_sorted,10000000,FastSort,52.662084,1.258411
+nearly_sorted,10000000,FastSort2,74.347166,1.776597
+nearly_sorted,10000000,FastSort3,62.584583,1.495519
+nearly_sorted,10000000,FastSort4,26.492208,0.633057
+nearly_sorted,10000000,StdSort,41.848083,1.000000
+nearly_sorted,10000000,StdStableSort,187.100875,4.470954
+# FastSort4 duplicates,10000000, round=0, backend=Metal, fallback=
+# FastSort4 duplicates,10000000, round=1, backend=Metal, fallback=
+# FastSort4 duplicates,10000000, round=2, backend=Metal, fallback=
+# FastSort4 duplicates,10000000, round=3, backend=Metal, fallback=
+# FastSort4 duplicates,10000000, round=4, backend=Metal, fallback=
+# FastSort4 duplicates,10000000, round=5, backend=Metal, fallback=
+duplicates,10000000,FastSort,45.341583,0.933475
+duplicates,10000000,FastSort2,30.243625,0.622644
+duplicates,10000000,FastSort3,28.086958,0.578244
+duplicates,10000000,FastSort4,27.601833,0.568256
+duplicates,10000000,StdSort,48.572875,1.000000
+duplicates,10000000,StdStableSort,285.928083,5.886579
+# FastSort4 equal,10000000, round=0, backend=CPU-ordered, fallback=
+# FastSort4 equal,10000000, round=1, backend=CPU-ordered, fallback=
+# FastSort4 equal,10000000, round=2, backend=CPU-ordered, fallback=
+# FastSort4 equal,10000000, round=3, backend=CPU-ordered, fallback=
+# FastSort4 equal,10000000, round=4, backend=CPU-ordered, fallback=
+# FastSort4 equal,10000000, round=5, backend=CPU-ordered, fallback=
+equal,10000000,FastSort,6.351000,0.563534
+equal,10000000,FastSort2,6.359209,0.564262
+equal,10000000,FastSort3,6.317375,0.560550
+equal,10000000,FastSort4,6.300792,0.559079
+equal,10000000,StdSort,11.269958,1.000000
+equal,10000000,StdStableSort,52.297375,4.640423
+# FastSort4 periodic,10000000, round=0, backend=Metal, fallback=
+# FastSort4 periodic,10000000, round=1, backend=Metal, fallback=
+# FastSort4 periodic,10000000, round=2, backend=Metal, fallback=
+# FastSort4 periodic,10000000, round=3, backend=Metal, fallback=
+# FastSort4 periodic,10000000, round=4, backend=Metal, fallback=
+# FastSort4 periodic,10000000, round=5, backend=Metal, fallback=
+periodic,10000000,FastSort,45.495708,1.206849
+periodic,10000000,FastSort2,33.992208,0.901700
+periodic,10000000,FastSort3,31.921625,0.846774
+periodic,10000000,FastSort4,27.399208,0.726810
+periodic,10000000,StdSort,37.697917,1.000000
+periodic,10000000,StdStableSort,249.706541,6.623882
+# FastSort4 organ_pipe,10000000, round=0, backend=Metal, fallback=
+# FastSort4 organ_pipe,10000000, round=1, backend=Metal, fallback=
+# FastSort4 organ_pipe,10000000, round=2, backend=Metal, fallback=
+# FastSort4 organ_pipe,10000000, round=3, backend=Metal, fallback=
+# FastSort4 organ_pipe,10000000, round=4, backend=Metal, fallback=
+# FastSort4 organ_pipe,10000000, round=5, backend=Metal, fallback=
+organ_pipe,10000000,FastSort,156.217250,0.365204
+organ_pipe,10000000,FastSort2,164.710542,0.385059
+organ_pipe,10000000,FastSort3,156.107583,0.364947
+organ_pipe,10000000,FastSort4,26.504333,0.061962
+organ_pipe,10000000,StdSort,427.753541,1.000000
+organ_pipe,10000000,StdStableSort,140.081791,0.327482

@@ -1,0 +1,215 @@
+[FastSort4] GPU warmup: 29.5844 ms (excluded from sorting timings)
+
+-------  test: 5 -------
+[5]
+[SelectSort] time: 0.000333 ms,isCorrect: 1
+[5]
+[InsertSort] time: 0.000125 ms,isCorrect: 1
+[5]
+[ToySort1] time: 0.001708 ms,isCorrect: 1
+[5]
+[MapSort] time: 0.000708 ms,isCorrect: 1
+[5]
+[ShellSort] time: 0.000166 ms,isCorrect: 1
+[5]
+[FastSort] time: 0.000333 ms,isCorrect: 1
+[5]
+[FastSort2] time: 0.00025 ms,isCorrect: 1
+[5]
+[FastSort3] time: 0.000292 ms,isCorrect: 1
+[5]
+[FastSort4] time: 0.000542 ms,isCorrect: 1
+[5]
+[StdSort] time: 0.000375 ms,isCorrect: 1
+[5]
+[StdStableSort] time: 0.000167 ms,isCorrect: 1
+[5]
+[QuickSort] time: 0.000334 ms,isCorrect: 1
+[5]
+[QuickSort2] time: 8.3e-05 ms,isCorrect: 1
+[5]
+[TimSort] time: 0.000542 ms,isCorrect: 1
+[5]
+[MergeSort] time: 0.00025 ms,isCorrect: 1
+[5]
+[HeapSort] time: 0.000167 ms,isCorrect: 1
+
+-------  test: 100 -------
+[100]
+[SelectSort] time: 0.007584 ms,isCorrect: 1
+[100]
+[InsertSort] time: 0.0015 ms,isCorrect: 1
+[100]
+[ToySort1] time: 0.002542 ms,isCorrect: 1
+[100]
+[MapSort] time: 0.007959 ms,isCorrect: 1
+[100]
+[ShellSort] time: 0.002208 ms,isCorrect: 1
+[100]
+[FastSort] time: 0.002041 ms,isCorrect: 1
+[100]
+[FastSort2] time: 0.001667 ms,isCorrect: 1
+[100]
+[FastSort3] time: 0.001375 ms,isCorrect: 1
+[100]
+[FastSort4] time: 0.000916 ms,isCorrect: 1
+[100]
+[StdSort] time: 0.001958 ms,isCorrect: 1
+[100]
+[StdStableSort] time: 0.001583 ms,isCorrect: 1
+[100]
+[QuickSort] time: 0.001833 ms,isCorrect: 1
+[100]
+[QuickSort2] time: 0.001834 ms,isCorrect: 1
+[100]
+[TimSort] time: 0.002167 ms,isCorrect: 1
+[100]
+[MergeSort] time: 0.002666 ms,isCorrect: 1
+[100]
+[HeapSort] time: 0.0015 ms,isCorrect: 1
+
+-------  test: 1000 -------
+[1000]
+[SelectSort] time: 0.755833 ms,isCorrect: 1
+[1000]
+[InsertSort] time: 0.072917 ms,isCorrect: 1
+[1000]
+[ToySort1] time: 0.085959 ms,isCorrect: 1
+[1000]
+[MapSort] time: 0.080708 ms,isCorrect: 1
+[1000]
+[ShellSort] time: 0.034208 ms,isCorrect: 1
+[1000]
+[FastSort] time: 0.017084 ms,isCorrect: 1
+[1000]
+[FastSort2] time: 0.011959 ms,isCorrect: 1
+[1000]
+[FastSort3] time: 0.0115 ms,isCorrect: 1
+[1000]
+[FastSort4] time: 0.008792 ms,isCorrect: 1
+[1000]
+[StdSort] time: 0.012875 ms,isCorrect: 1
+[1000]
+[StdStableSort] time: 0.018875 ms,isCorrect: 1
+[1000]
+[QuickSort] time: 0.022083 ms,isCorrect: 1
+[1000]
+[QuickSort2] time: 0.022208 ms,isCorrect: 1
+[1000]
+[TimSort] time: 0.023 ms,isCorrect: 1
+[1000]
+[MergeSort] time: 0.025542 ms,isCorrect: 1
+[1000]
+[HeapSort] time: 0.015709 ms,isCorrect: 1
+
+-------  test: 10000 -------
+[10000]
+[SelectSort] time: 49.903 ms,isCorrect: 1
+[10000]
+[InsertSort] time: 6.43842 ms,isCorrect: 1
+[10000]
+[ToySort1] time: 6.697 ms,isCorrect: 1
+[10000]
+[MapSort] time: 1.03379 ms,isCorrect: 1
+[10000]
+[ShellSort] time: 0.433916 ms,isCorrect: 1
+[10000]
+[FastSort] time: 0.178833 ms,isCorrect: 1
+[10000]
+[FastSort2] time: 0.130083 ms,isCorrect: 1
+[10000]
+[FastSort3] time: 0.124459 ms,isCorrect: 1
+[10000]
+[FastSort4] time: 0.103167 ms,isCorrect: 1
+[10000]
+[StdSort] time: 0.136625 ms,isCorrect: 1
+[10000]
+[StdStableSort] time: 0.23575 ms,isCorrect: 1
+[10000]
+[QuickSort] time: 0.288125 ms,isCorrect: 1
+[10000]
+[QuickSort2] time: 0.292917 ms,isCorrect: 1
+[10000]
+[TimSort] time: 0.309416 ms,isCorrect: 1
+[10000]
+[MergeSort] time: 0.324708 ms,isCorrect: 1
+[10000]
+[HeapSort] time: 0.188791 ms,isCorrect: 1
+
+-------  test: 100000 -------
+[100000]
+[ShellSort] time: 5.99042 ms,isCorrect: 1
+[100000]
+[FastSort] time: 1.90092 ms,isCorrect: 1
+[100000]
+[FastSort2] time: 1.44354 ms,isCorrect: 1
+[100000]
+[FastSort3] time: 1.36167 ms,isCorrect: 1
+[100000]
+[FastSort4] time: 1.06854 ms,isCorrect: 1
+[100000]
+[StdSort] time: 1.50417 ms,isCorrect: 1
+[100000]
+[StdStableSort] time: 3.21871 ms,isCorrect: 1
+[100000]
+[QuickSort] time: 3.58442 ms,isCorrect: 1
+[100000]
+[QuickSort2] time: 3.52325 ms,isCorrect: 1
+[100000]
+[TimSort] time: 3.99192 ms,isCorrect: 1
+[100000]
+[MergeSort] time: 3.74321 ms,isCorrect: 1
+[100000]
+[HeapSort] time: 2.70421 ms,isCorrect: 1
+
+-------  test: 1000000 -------
+[1000000]
+[ShellSort] time: 80.0055 ms,isCorrect: 1
+[1000000]
+[FastSort] time: 20.9389 ms,isCorrect: 1
+[1000000]
+[FastSort2] time: 16.1247 ms,isCorrect: 1
+[1000000]
+[FastSort3] time: 14.6696 ms,isCorrect: 1
+[1000000]
+[FastSort4] time: 4.67404 ms,isCorrect: 1
+[1000000]
+[StdSort] time: 16.4558 ms,isCorrect: 1
+[1000000]
+[StdStableSort] time: 36.9242 ms,isCorrect: 1
+[1000000]
+[QuickSort] time: 43.6492 ms,isCorrect: 1
+[1000000]
+[QuickSort2] time: 42.8376 ms,isCorrect: 1
+[1000000]
+[TimSort] time: 47.9842 ms,isCorrect: 1
+[1000000]
+[MergeSort] time: 43.6546 ms,isCorrect: 1
+[1000000]
+[HeapSort] time: 43.7424 ms,isCorrect: 1
+
+-------  test: 10000000 -------
+[10000000]
+[ShellSort] time: 1062.22 ms,isCorrect: 1
+[10000000]
+[FastSort] time: 243.839 ms,isCorrect: 1
+[10000000]
+[FastSort2] time: 208.882 ms,isCorrect: 1
+[10000000]
+[FastSort3] time: 177.185 ms,isCorrect: 1
+[10000000]
+[FastSort4] time: 35.3375 ms,isCorrect: 1
+[10000000]
+[StdSort] time: 203.9 ms,isCorrect: 1
+[10000000]
+[StdStableSort] time: 483.505 ms,isCorrect: 1
+[10000000]
+[QuickSort] time: 567.865 ms,isCorrect: 1
+[10000000]
+[QuickSort2] time: 520.178 ms,isCorrect: 1
+[10000000]
+[TimSort] time: 562.88 ms,isCorrect: 1
+[10000000]
+[MergeSort] time: 514.479 ms,isCorrect: 1
+[10000000]
+[HeapSort] time: 957.631 ms,isCorrect: 1

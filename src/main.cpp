@@ -1,12 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <chrono>
 #include <cstdlib>
 #include <algorithm>
 #include "sort.h"
 #include "fastsort.h"
 #include "fastsort2.h"
 #include "fastsort3.h"
+#include "fastsort4.h"
 #include "stdsort.h"
 #include "stdstablesort.h"
 #include "heapsort.h"
@@ -28,13 +30,13 @@ struct RunResult{
 };
 
 RunResult testSingle(Sort * sort,const vector<int>& data){
-	clock_t begin = clock();
+	auto begin = std::chrono::steady_clock::now();
 	vector<int> result = sort->Run(data);
-	clock_t end = clock();
+	auto end = std::chrono::steady_clock::now();
 
 	struct RunResult runResult;
-	runResult.time = ((double)(end-begin))/CLOCKS_PER_SEC*1000;
-	runResult.isCorrect = true;
+	runResult.time = std::chrono::duration<double, std::milli>(end - begin).count();
+	runResult.isCorrect = result.size() == data.size();
 	for (size_t i = 0 ;i != result.size() ; i++){
 		if( result[i] != i ){
 			runResult.isCorrect = false;
@@ -82,6 +84,15 @@ void testAll(vector<Sort*> slowSorts,vector<Sort*> mediemSorts,vector<Sort*> qui
 
 int main(){
 	try{
+		std::string warmupError;
+		auto warmupBegin = std::chrono::steady_clock::now();
+		bool gpuReady = FastSort4::WarmUp(warmupError);
+		double warmupMs = std::chrono::duration<double, std::milli>(
+			std::chrono::steady_clock::now() - warmupBegin).count();
+		if(gpuReady)
+			cout << "[FastSort4] GPU warmup: " << warmupMs << " ms (excluded from sorting timings)" << endl;
+		else
+			cout << "[FastSort4] GPU warmup unavailable: " << warmupError << "; using FastSort3" << endl;
 		srand(time(0));
 		vector<Sort*> slowSorts;
 		slowSorts.push_back(new SelectSort());
@@ -96,6 +107,7 @@ int main(){
 		quickSorts.push_back(new FastSort());
 		quickSorts.push_back(new FastSort2());
 		quickSorts.push_back(new FastSort3());
+		quickSorts.push_back(new FastSort4());
 		quickSorts.push_back(new StdSort());
 		quickSorts.push_back(new StdStableSort());
 		quickSorts.push_back(new QuickSort());
